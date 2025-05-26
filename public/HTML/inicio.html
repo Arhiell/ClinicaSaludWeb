@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio - Clínica Goya</title>
+    <link rel="stylesheet" href="../CSS/inicio.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Clínica Goya</div>
+      <nav>
+        <ul class="menu">
+          <li><a href="../HTML/inicio.html">Inicio</a></li>
+          <li><a href="../HTML/solicitarTurno.html">Solicitar Turno</a></li>
+          <li><a href="../HTML/misTurno.html">Mis Datos</a></li>
+          <li><a href="#" onclick="cerrarSesion()">Cerrar Sección</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Bienvenido a Clínica Goya</h1>
+      <p>
+        Nos alegra recibirte. Desde aquí podrás gestionar tus turnos, revisar
+        tus datos y acceder a todos nuestros servicios médicos.
+      </p>
+    </main>
+
+    <footer>
+      <p>Dirección: Calle Ficticia 123, Goya, Corrientes</p>
+      <p>Teléfono: (03777) 123456 - Email: contacto@clinicagoya.com</p>
+    </footer>
+
+    <script>
+      function cerrarSesion() {
+        // Si usás localStorage o sessionStorage
+        sessionStorage.clear(); // o localStorage.clear();
+
+        // Redirigís al login
+        window.location.href = "../views/login.html";
+      }
+    </script>
+  </body>
+</html>
