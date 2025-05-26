@@ -31,7 +31,7 @@ router.post("/login", (req, res) => {
     if (password === user.contrasena) {
       console.log("Usuario autenticado:", user.nombre_usuario);
       // Redirigir a inicio.html
-      return res.redirect("/inicio.html");
+      return res.redirect("HTML/inicio.html");
     } else {
       return res.status(401).send("Contraseña incorrecta");
     }
@@ -98,7 +98,7 @@ router.post("/register", (req, res) => {
                 return res.status(500).send("Error al registrar usuario");
               }
               // Redirigir a inicio.html después de registrar exitosamente
-              res.redirect("/inicio.html");
+              res.redirect("/HTML/inicio.html");
             }
           );
         }
