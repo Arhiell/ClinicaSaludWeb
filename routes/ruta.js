@@ -97,6 +97,8 @@ router.post("/register", (req, res) => {
                 console.error("Error al insertar en usuario:", err3);
                 return res.status(500).send("Error al registrar usuario");
               }
+              // Redirigir a inicio.html después de registrar exitosamente
+              res.redirect("/inicio.html");
             }
           );
         }
