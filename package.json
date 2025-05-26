@@ -1,0 +1,17 @@
+{
+  "name": "prueba",
+  "version": "1.0.0",
+  "description": "clinica-app/\r │\r ├── public/\r │ └── Paciente/\r │ └── paceinte.css\r │\r ├── views/\r │ └── index.html ← (tu HTML va acá)\r │\r ├── db/\r │ └── conexion.js ← conexión a MySQL\r │\r ├── routes/\r │ └── auth.js ← rutas para login/registro\r │\r ├── app.js ← servidor principal\r ├── package.json",
+  "main": "routes/auth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1"
+  }
+}
