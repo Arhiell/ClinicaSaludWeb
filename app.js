@@ -15,11 +15,10 @@ app.use(express.static(path.join(__dirname, "public")));
 // Configurar motor de vistas o servir HTML directamente
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
-  res.sendFile(path.join(__dirname, "public", "inicio.html"));
 });
 
 // Rutas
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/ruta");
 app.use("/", authRoutes); // para login y registro
 
 // Iniciar servidor
