@@ -29,7 +29,7 @@ router.post("/login", (req, res) => {
 
     // Comparar contraseña en texto plano (temporal)
     if (password === user.contrasena) {
-      res.redirect("/public/inicio.html");
+      console.log("Usuario autenticado:", user.nombre_usuario);
     } else {
       res.status(401).send("Contraseña incorrecta");
     }
@@ -95,7 +95,6 @@ router.post("/register", (req, res) => {
                 console.error("Error al insertar en usuario:", err3);
                 return res.status(500).send("Error al registrar usuario");
               }
-              res.redirect("/inicio.html");
             }
           );
         }
