@@ -1,67 +1,61 @@
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Contenedor del formulario */
+.form-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  background-color: #e0fbfc;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Body general */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f7f7f7;
-  color: #333;
+/* Formulario con flexbox columna */
+form {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  gap: 1rem;
 }
 
-/* Header */
-header {
-  background-color: #005f73;
-  color: white;
+/* Cada campo con su label */
+.form-group {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.logo {
-  font-size: 1.5rem;
+/* Etiqueta */
+.form-group label {
+  margin-bottom: 0.3rem;
   font-weight: bold;
+  color: #0077b6;
 }
 
-.menu {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
+/* Input */
+.form-group input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #90e0ef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
-.menu li a {
+.form-group input:focus {
+  border-color: #0077b6;
+  outline: none;
+}
+
+/* Botón */
+button {
+  padding: 0.8rem 1rem;
+  background-color: #0077b6;
   color: white;
-  text-decoration: none;
-  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.menu li a:hover {
-  text-decoration: underline;
-}
-
-/* Main */
-main {
-  flex: 1;
-  padding: 2rem;
-  text-align: center;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: 2rem;
-  border-radius: 10px;
-}
-
-/* Footer */
-footer {
-  background-color: #005f73;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  margin-top: auto;
+button:hover {
+  background-color: #023e8a;
 }
