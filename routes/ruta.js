@@ -30,8 +30,10 @@ router.post("/login", (req, res) => {
     // Comparar contraseña en texto plano (temporal)
     if (password === user.contrasena) {
       console.log("Usuario autenticado:", user.nombre_usuario);
+      // Redirigir a inicio.html
+      return res.redirect("/inicio.html");
     } else {
-      res.status(401).send("Contraseña incorrecta");
+      return res.status(401).send("Contraseña incorrecta");
     }
   });
 });
