@@ -56,6 +56,7 @@ body {
   transition: border-color 0.2s;
   width: 100%; /* Para que ocupe todo el ancho disponible */
   box-sizing: border-box;
+  margin-bottom: 12px; /* Centrar el input */
 }
 .login-card input:focus {
   outline: none;
@@ -115,4 +116,15 @@ body {
   .login-card button {
     font-size: 0.9rem;
   }
+}
+/* --- Imagen --- */
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  max-width: 200px;
+  height: 150px;
+  border-radius: 8px;
+  margin: 10px auto;
 }
