@@ -20,11 +20,33 @@
     </header>
 
     <main>
-      <h1>Mis Datos</h1>
+      <h1>Solicitar Turno</h1>
       <p>
         Nos alegra recibirte. Desde aquí podrás gestionar tus turnos, revisar
         tus datos y acceder a todos nuestros servicios médicos.
       </p>
+
+
+      <form id="formTurno" action="/api/turnos" method="POST">
+        <label for="especialidad">Especialidad:</label>
+        <select id="especialidad" name="especialidad" required>
+          <option value="">-- Seleccionar --</option>
+          <option value="1">Clínica General</option>
+          <option value="2">Pediatría</option>
+          <option value="3">Cardiología</option>
+          <option value="4">Ginecología</option>
+        </select>
+    
+        <label for="fecha">Fecha del Turno:</label>
+        <input type="date" id="fecha" name="fecha" required />
+    
+        <label for="hora">Hora:</label>
+        <input type="time" id="hora" name="hora" required />
+    
+        <label for="comentarios">Comentarios:</label>
+        <textarea id="comentarios" name="comentarios" rows="4"></textarea>
+    
+        <button type="submit">Solicitar Turno</button>
     </main>
 
     <footer>
