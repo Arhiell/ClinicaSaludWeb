@@ -133,3 +133,15 @@ footer {
     padding: 1rem;
   }
 }
+nav ul.menu li a.cerrarSesion{
+  background-color: #e74c3c; /* Rojo */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+nav ul.menu li a.cerrarSesion:hover {
+  background-color: #c0392b; /* Rojo oscuro */
+}
