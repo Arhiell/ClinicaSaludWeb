@@ -5,7 +5,7 @@ main {
   align-items: center;
   padding: 2rem;
   min-height: 100vh;
-  background-color: #f0f4f8;
+  background: linear-gradient(179deg, #2d89e5, #f9f9f9);
 }
 
 /* ======= CONTENEDOR GENERAL ======= */
@@ -23,7 +23,7 @@ main {
 .contenedorTurno h1 {
   text-align: center;
   margin-bottom: 0.5rem;
-  color: #2d89e5;
+  color: #004a99;
 }
 
 .contenedorTurno p {
