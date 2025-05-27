@@ -58,8 +58,8 @@ router.post("/register", (req, res) => {
   }
 
   const insertarPersona = `
-    INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, telefono, direccion, email, id_rol, id_estado)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 4, 1)`; // 4: Rol paciente
+  INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, telefono, direccion, email, id_rol, id_estado)
+  VALUES (?, ?, ?, ?, ?, ?, ?, 4, 1)`; // 4: Rol paciente
 
   conexion.query(
     insertarPersona,
@@ -73,8 +73,8 @@ router.post("/register", (req, res) => {
       const idPersona = resultadoPersona.insertId;
 
       const insertarPaciente = `
-        INSERT INTO paciente (id_persona, obra_social, id_estado)
-        VALUES (?, ?, 1)`; // 1: Estado activo de paciente
+      INSERT INTO paciente (id_persona, obra_social, id_estado)
+      VALUES (?, ?, 1)`; // 1: Estado activo de paciente
 
       conexion.query(
         insertarPaciente,
@@ -86,8 +86,8 @@ router.post("/register", (req, res) => {
           }
 
           const insertarUsuario = `
-            INSERT INTO usuario (nombre_usuario, contrasena, id_persona, id_estado)
-            VALUES (?, ?, ?, 1)`; // 1: Estado activo de usuario
+          INSERT INTO usuario (nombre_usuario, contrasena, id_persona, id_estado)
+          VALUES (?, ?, ?, 1)`; // 1: Estado activo de usuario
 
           conexion.query(
             insertarUsuario,
@@ -101,6 +101,125 @@ router.post("/register", (req, res) => {
               res.redirect("/HTML/inicio.html");
             }
           );
+        }
+      );
+    }
+  );
+});
+
+// ------------------------------------------------------
+// Obtener especialidades
+router.get("/especialidades", (req, res) => {
+  conexion.query(
+    "SELECT id_especialidad, nombre FROM especialidad WHERE id_estado = 1",
+    (error, results) => {
+      if (error)
+        return res.status(500).json({ error: "Error en la base de datos" });
+      res.json(results);
+    }
+  );
+});
+
+// Obtener profesionales por especialidad
+router.get("/profesionales", (req, res) => {
+  const id_especialidad = req.query.id_especialidad;
+  if (!id_especialidad)
+    return res.status(400).json({ error: "Falta parámetro id_especialidad" });
+  conexion.query(
+    `SELECT p.id_persona AS id_profesional, per.nombre, per.apellido
+     FROM profesional p
+     JOIN persona per ON p.id_persona = per.id_persona
+     WHERE p.id_especialidad = ? AND p.id_estado = 1`,
+    [id_especialidad],
+    (error, results) => {
+      if (error)
+        return res.status(500).json({ error: "Error en la base de datos" });
+      res.json(results);
+    }
+  );
+});
+
+// Obtener horarios disponibles para un profesional y fecha
+router.get("/horarios-disponibles", (req, res) => {
+  const id_profesional = req.query.id_profesional;
+  const fecha = req.query.fecha;
+  if (!id_profesional || !fecha)
+    return res.status(400).json({ error: "Faltan parámetros" });
+
+  // Obtener el día de la semana en español
+  const diasSemana = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miercoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+  ];
+  const diaNombre = diasSemana[new Date(fecha).getDay()];
+
+  conexion.query(
+    `SELECT hora_inicio, hora_fin
+     FROM horario_disponible
+     WHERE id_profesional = ? AND dia_semana = ? AND id_estado = 1`,
+    [id_profesional, diaNombre],
+    (error, results) => {
+      if (error)
+        return res.status(500).json({ error: "Error en la base de datos" });
+      res.json(results);
+    }
+  );
+});
+
+// Obtener días disponibles para un profesional (solo días con menos de 10 turnos)
+router.get("/dias-disponibles", (req, res) => {
+  const id_profesional = req.query.id_profesional;
+  if (!id_profesional)
+    return res.status(400).json({ error: "Falta parámetro id_profesional" });
+
+  conexion.query(
+    `SELECT DISTINCT hd.dia_semana
+   FROM horario_disponible hd
+   WHERE hd.id_profesional = ? AND hd.id_estado = 1`,
+    [id_profesional],
+    (error, dias) => {
+      if (error)
+        return res.status(500).json({ error: "Error en la base de datos" });
+
+      const hoy = new Date();
+      const fechas = [];
+      for (let i = 0; i < 14; i++) {
+        const fecha = new Date(hoy);
+        fecha.setDate(hoy.getDate() + i);
+        const diasSemana = [
+          "Domingo",
+          "Lunes",
+          "Martes",
+          "Miercoles",
+          "Jueves",
+          "Viernes",
+          "Sábado",
+        ];
+        const diaNombre = diasSemana[fecha.getDay()];
+        if (dias.some((d) => d.dia_semana === diaNombre)) {
+          fechas.push(fecha.toISOString().slice(0, 10));
+        }
+      }
+      if (fechas.length === 0) return res.json([]);
+      conexion.query(
+        `SELECT DATE(fecha_hora) as fecha, COUNT(*) as cantidad
+       FROM turno
+       WHERE id_profesional = ? AND DATE(fecha_hora) IN (?)
+       GROUP BY DATE(fecha_hora)`,
+        [id_profesional, fechas],
+        (err, turnos) => {
+          if (err)
+            return res.status(500).json({ error: "Error en la base de datos" });
+          const fechasDisponibles = fechas.filter((f) => {
+            const t = turnos.find((tu) => tu.fecha === f);
+            return !t || t.cantidad < 10;
+          });
+          res.json(fechasDisponibles);
         }
       );
     }
