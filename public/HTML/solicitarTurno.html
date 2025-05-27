@@ -15,7 +15,11 @@
           <li><a href="../HTML/inicio.html">Inicio</a></li>
           <li><a href="../HTML/solicitarTurno.html">Solicitar Turno</a></li>
           <li><a href="../HTML/misTurno.html">Mis Datos</a></li>
-          <li><a class="cerrarSesion" href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
+          <li>
+            <a class="cerrarSesion" href="#" onclick="cerrarSesion()"
+              >Cerrar Sesión</a
+            >
+          </li>
         </ul>
       </nav>
     </header>
@@ -40,7 +44,9 @@
           </select>
 
           <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" name="fecha" required />
+          <select id="fecha" name="fecha" required>
+            <option value="">-- Seleccionar día --</option>
+          </select>
 
           <label for="hora">Horario disponible:</label>
           <select id="hora" name="hora" required>

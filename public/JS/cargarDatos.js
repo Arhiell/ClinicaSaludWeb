@@ -1,18 +1,31 @@
+// ruta: public/JS/cargarDatos.js
 document.getElementById("doctor").addEventListener("change", function () {
+  console.log("Evento change de especialista disparado");
   const idProfesional = this.value;
-  const inputFecha = document.getElementById("fecha");
-  inputFecha.value = "";
-  inputFecha.disabled = true;
+  console.log("ID profesional seleccionado:", idProfesional);
+  const selectFecha = document.getElementById("fecha");
+  selectFecha.innerHTML = '<option value="">-- Seleccionar día --</option>';
+  selectFecha.disabled = true;
+
+  // Limpiar horarios
+  const selectHora = document.getElementById("hora");
+  selectHora.innerHTML = '<option value="">-- Seleccioná fecha --</option>';
 
   if (!idProfesional) return;
 
   fetch(`/dias-disponibles?id_profesional=${idProfesional}`)
     .then((res) => res.json())
     .then((fechas) => {
-      // Habilitar el campo fecha solo si hay fechas disponibles
-      inputFecha.disabled = fechas.length === 0;
-      // Guardar fechas válidas en un atributo para validar luego
-      inputFecha.setAttribute("data-fechas-validas", JSON.stringify(fechas));
+      console.log("Fechas recibidas del backend:", fechas);
+      selectFecha.disabled = fechas.length === 0;
+      if (fechas.length > 0) {
+        fechas.forEach((fecha) => {
+          const option = document.createElement("option");
+          option.value = fecha;
+          option.textContent = fecha;
+          selectFecha.appendChild(option);
+        });
+      }
     });
 });
 
@@ -50,28 +63,19 @@ document.getElementById("especialidad").addEventListener("change", function () {
     });
 });
 
-// Validar que solo se pueda elegir una fecha válida
-document.getElementById("fecha").addEventListener("input", function () {
-  const fechasValidas = JSON.parse(
-    this.getAttribute("data-fechas-validas") || "[]"
-  );
-  if (!fechasValidas.includes(this.value)) {
-    this.setCustomValidity("Selecciona una fecha disponible");
-  } else {
-    this.setCustomValidity("");
-  }
-});
-
 // Cargar horarios disponibles al cambiar la fecha
 document.getElementById("fecha").addEventListener("change", function () {
   const idProfesional = document.getElementById("doctor").value;
   const fecha = this.value;
+  console.log("Evento change de fecha disparado");
+  console.log("ID profesional:", idProfesional, "Fecha seleccionada:", fecha);
   const selectHora = document.getElementById("hora");
   selectHora.innerHTML = '<option value="">-- Seleccioná fecha --</option>';
   if (!idProfesional || !fecha) return;
   fetch(`/horarios-disponibles?id_profesional=${idProfesional}&fecha=${fecha}`)
     .then((res) => res.json())
     .then((data) => {
+      console.log("Horarios recibidos del backend:", data);
       data.forEach((horario) => {
         const option = document.createElement("option");
         option.value = horario.hora_inicio + " - " + horario.hora_fin;
