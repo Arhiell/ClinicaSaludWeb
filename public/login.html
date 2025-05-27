@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acceso Pacientes Clínica</title>
+    <link rel="stylesheet" href="CSS/Login.css" />
+  </head>
+  <body>
+ 
+    <div class="login-container">
+      <div class="login-card active" id="loginForm">
+        <img
+          class="logo"
+          src="/img/diseno-logotipo-clinica-medica-concepto-creativo-unico_526458-2787.avif"
+          alt="Logo Clínica Goya"
+        />
+        <h2>Iniciar Sesión</h2>
+        <form action="/login" method="POST">
+          <input
+            type="text"
+            name="usuario"
+            placeholder="Nombre de Usuario"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            required
+          />
+          <button type="submit">Ingresar</button>
+        </form>
+        <p>
+          ¿No tienes cuenta?
+          <a href="#" onclick="mostrarRegistro()">Regístrate aquí</a>
+        </p>
+      </div>
+
+      <div class="login-card" id="registerForm">
+        <h2>Registro de Paciente</h2>
+        <form action="/register" method="POST">
+          <input type="text" name="nombre" placeholder="Nombre" required />
+          <input type="text" name="apellido" placeholder="Apellido" required />
+          <input type="text" name="dni" placeholder="DNI" required />
+          <input type="email" name="email" placeholder="email" required />
+          <input type="text" name="telefono" placeholder="Teléfono" />
+          <input type="text" name="direccion" placeholder="Dirección" />
+          <input type="date" name="fecha_nacimiento" required />
+          <input
+            type="text"
+            name="nombre_usuario"
+            placeholder="Nombre de Usuario"
+            required
+          />
+          <input
+            type="password"
+            name="contrasena"
+            placeholder="Contraseña"
+            required
+          />
+
+          <button type="submit">Registrarse</button>
+          <p>
+            ¿Ya tienes cuenta?
+            <a href="#" onclick="mostrarLogin()">Iniciar sesión</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function mostrarRegistro() {
+        document.getElementById("loginForm").classList.remove("active");
+        document.getElementById("registerForm").classList.add("active");
+      }
+      function mostrarLogin() {
+        document.getElementById("registerForm").classList.remove("active");
+        document.getElementById("loginForm").classList.add("active");
+      }
+    </script>
+  </body>
+</html>
