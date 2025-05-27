@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inicio - Clínica Goya</title>
     <link rel="stylesheet" href="../CSS/inicio.css" />
+    <link rel="stylesheet" href="../CSS/solicitarTurno.css" />
   </head>
   <body>
     <header>
@@ -14,53 +15,89 @@
           <li><a href="../HTML/inicio.html">Inicio</a></li>
           <li><a href="../HTML/solicitarTurno.html">Solicitar Turno</a></li>
           <li><a href="../HTML/misTurno.html">Mis Datos</a></li>
-          <li><a href="#" onclick="cerrarSesion()">Cerrar Sección</a></li>
+          <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
         </ul>
       </nav>
     </header>
 
     <main>
-      <h1>Solicitar Turno</h1>
-      <p>
-        Nos alegra recibirte. Desde aquí podrás gestionar tus turnos, revisar
-        tus datos y acceder a todos nuestros servicios médicos.
-      </p>
+      <div class="contenedorTurno">
+        <h1>Solicitar Turno</h1>
+        <p>
+          Nos alegra recibirte. Desde aquí podrás gestionar tus turnos, revisar
+          tus datos y acceder a todos nuestros servicios médicos.
+        </p>
 
+        <form id="formTurno">
+          <label for="especialidad">Especialidad:</label>
+          <select id="especialidad" name="especialidad" required>
+            <option value="">-- Seleccionar Especialidad --</option>
+          </select>
 
-      <form id="formTurno" action="/api/turnos" method="POST">
-        <label for="especialidad">Especialidad:</label>
-        <select id="especialidad" name="especialidad" required>
-          <option value="">-- Seleccionar --</option>
-          <option value="1">Clínica General</option>
-          <option value="2">Pediatría</option>
-          <option value="3">Cardiología</option>
-          <option value="4">Ginecología</option>
-        </select>
-    
-        <label for="fecha">Fecha del Turno:</label>
-        <input type="date" id="fecha" name="fecha" required />
-    
-        <label for="hora">Hora:</label>
-        <input type="time" id="hora" name="hora" required />
-    
-        <label for="comentarios">Comentarios:</label>
-        <textarea id="comentarios" name="comentarios" rows="4"></textarea>
-    
-        <button type="submit">Solicitar Turno</button>
+          <label for="doctor">Especialista:</label>
+          <select id="doctor" name="doctor" required>
+            <option value="">-- Seleccionar Especialista --</option>
+          </select>
+
+          <label for="fecha">Fecha:</label>
+          <input type="date" id="fecha" name="fecha" required />
+
+          <label for="hora">Horario disponible:</label>
+          <select id="hora" name="hora" required>
+            <option value="">-- Seleccioná fecha --</option>
+          </select>
+
+          <!-- Turno para menor -->
+          <label>
+            <input type="checkbox" id="turnoMenor" />
+            Turno para menor
+          </label>
+
+          <div id="seccionMenor" style="display: none">
+            <label for="nombreMenor">Nombre completo del menor:</label>
+            <input type="text" id="nombreMenor" name="nombreMenor" />
+
+            <label for="dniMenor">DNI del menor:</label>
+            <input type="text" id="dniMenor" name="dniMenor" />
+
+            <label for="fechaNacimientoMenor">Fecha de nacimiento:</label>
+            <input
+              type="date"
+              id="fechaNacimientoMenor"
+              name="fechaNacimientoMenor"
+            />
+
+            <label for="relacion">Relación con el menor:</label>
+            <input type="text" id="relacion" name="relacion" />
+
+            <label for="motivo">Motivo de la consulta:</label>
+            <input type="text" id="motivo" name="motivo" />
+          </div>
+
+          <button type="submit">Solicitar Turno</button>
+        </form>
+      </div>
     </main>
 
     <footer>
       <p>Dirección: Calle Ficticia 123, Goya, Corrientes</p>
       <p>Teléfono: (03777) 123456 - Email: contacto@clinicagoya.com</p>
     </footer>
+
     <script>
       function cerrarSesion() {
-        // Si usás localStorage o sessionStorage
-        sessionStorage.clear(); // o localStorage.clear();
-
-        // Redirigís al login
+        sessionStorage.clear();
         window.location.href = "../login.html";
       }
+
+      // Mostrar u ocultar sección del menor
+      document
+        .getElementById("turnoMenor")
+        .addEventListener("change", function () {
+          const seccion = document.getElementById("seccionMenor");
+          seccion.style.display = this.checked ? "block" : "none";
+        });
     </script>
+    <script src="/JS/cargarDatos.js"></script>
   </body>
 </html>
