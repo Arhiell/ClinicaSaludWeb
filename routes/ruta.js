@@ -18,11 +18,11 @@ router.post("/login", (req, res) => {
   conexion.query(sql, [usuario], (err, results) => {
     if (err) {
       console.error("Error en la consulta:", err);
-      return res.status(500).send("Error en el servidor");
+      return res.status(500).json({error:"Error en el servidor"});
     }
 
     if (results.length === 0) {
-      return res.status(401).send("Usuario no encontrado o inactivo");
+      return res.status(401).json({error:"Usuario no encontrado o inactivo"});
     }
 
     const user = results[0];
@@ -31,9 +31,9 @@ router.post("/login", (req, res) => {
     if (password === user.contrasena) {
       console.log("Usuario autenticado:", user.nombre_usuario);
       // Redirigir a inicio.html
-      return res.redirect("HTML/inicio.html");
+      return res.json({ success: true, redirect: "/HTML/inicio.html" });
     } else {
-      return res.status(401).send("Contraseña incorrecta");
+      return res.status(401).json({error: "Contraseña incorrecta"});
     }
   });
 });
