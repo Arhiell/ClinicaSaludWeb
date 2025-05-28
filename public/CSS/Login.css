@@ -128,8 +128,17 @@ body {
   border-radius: 8px;
   margin: 10px auto;
 }
+/* mensaje de error */
 .error-msg {
   color: red;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+  animation: fadeIn 0.1s ease;
+}
+/* mensaje de registro exitoso */
+.success-msg {
+  color: green;
   font-size: 0.9rem;
   margin-top: 10px;
   text-align: center;

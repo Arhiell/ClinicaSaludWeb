@@ -47,27 +47,28 @@ router.post("/register", (req, res) => {
     fecha_nacimiento,
     telefono,
     direccion,
-    email,
+    gmail,
     obra_social,
     nombre_usuario, // <- agregar al formulario
     contrasena, // <- agregar al formulario
   } = req.body;
 
-  if (!email || !nombre_usuario || !contrasena) {
-    return res.status(400).send("Faltan datos obligatorios");
+  if (!gmail || !nombre_usuario || !contrasena) {
+    console.error("Faltan datos obligatorios para el registro");
+    return res.status(400).json({ error: "Faltan datos obligatorios" });
   }
 
   const insertarPersona = `
-  INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, telefono, direccion, email, id_rol, id_estado)
+  INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, telefono, direccion, gmail, id_rol, id_estado)
   VALUES (?, ?, ?, ?, ?, ?, ?, 4, 1)`; // 4: Rol paciente
 
   conexion.query(
     insertarPersona,
-    [nombre, apellido, dni, fecha_nacimiento, telefono, direccion, email],
+    [nombre, apellido, dni, fecha_nacimiento, telefono, direccion, gmail],
     (err, resultadoPersona) => {
       if (err) {
         console.error("Error al insertar en persona:", err);
-        return res.status(500).send("Error al registrar persona");
+        return res.status(500).json({ error: "Error alguno de los datos ya existen" });
       }
 
       const idPersona = resultadoPersona.insertId;
@@ -82,7 +83,7 @@ router.post("/register", (req, res) => {
         (err2, resultadoPaciente) => {
           if (err2) {
             console.error("Error al insertar en paciente:", err2);
-            return res.status(500).send("Error al registrar paciente");
+            return res.status(500).json({ error: "Error al registrar paciente" });
           }
 
           const insertarUsuario = `
@@ -95,10 +96,10 @@ router.post("/register", (req, res) => {
             (err3, resultadoUsuario) => {
               if (err3) {
                 console.error("Error al insertar en usuario:", err3);
-                return res.status(500).send("Error al registrar usuario");
+                return res.status(500).json({ error: "Error al registrar usuario" });
               }
               // Redirigir a inicio.html después de registrar exitosamente
-              res.redirect("/HTML/inicio.html");
+              res.json({ success: true, redirect: "/HTML/inicio.html" });
             }
           );
         }

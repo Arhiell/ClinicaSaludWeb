@@ -41,11 +41,11 @@
 
       <div class="login-card" id="registerForm">
         <h2>Registro de Paciente</h2>
-        <form action="/register" method="POST">
+        <form id="register-form" action="/register" method="POST">
           <input type="text" name="nombre" placeholder="Nombre" required />
           <input type="text" name="apellido" placeholder="Apellido" required />
           <input type="text" name="dni" placeholder="DNI" required />
-          <input type="email" name="email" placeholder="email" required />
+          <input type="email" name="gmail" placeholder="email" required />
           <input type="text" name="telefono" placeholder="Teléfono" />
           <input type="text" name="direccion" placeholder="Dirección" />
           <input type="date" name="fecha_nacimiento" required />
@@ -63,6 +63,8 @@
           />
 
           <button type="submit">Registrarse</button>
+          <p id="register-success" class="success-msg"></p>
+          <p id="register-error" class="error-msg"></p>
           <p>
             ¿Ya tienes cuenta?
             <a href="#" onclick="mostrarLogin()">Iniciar sesión</a>
@@ -104,6 +106,41 @@
       document.getElementById("login-error").textContent = data.error;
     }
   });
+  // Manejo del formulario de registro
+document.getElementById("register-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+
+  const res = await fetch("/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  const json = await res.json();
+
+  // Mostrar mensajes de error o éxito
+  const errorMsg = document.getElementById("register-error");
+  const successMsg = document.getElementById("register-success");
+
+  errorMsg.textContent = "";
+  successMsg.textContent = "";
+
+  if (res.ok && json.redirect) {
+    successMsg.textContent = "¡Registro exitoso! Redirigiendo...";
+    setTimeout(() => {
+      window.location.href = json.redirect;
+    }, 2000); // Espera 2 segundos antes de redirigir
+  } else {
+    errorMsg.textContent = json.error || "Error en el registro.";
+  }
+});
+
 </script>
 
   </body>
