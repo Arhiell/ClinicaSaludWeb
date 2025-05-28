@@ -18,11 +18,13 @@ router.post("/login", (req, res) => {
   conexion.query(sql, [usuario], (err, results) => {
     if (err) {
       console.error("Error en la consulta:", err);
-      return res.status(500).json({error:"Error en el servidor"});
+      return res.status(500).json({ error: "Error en el servidor" });
     }
 
     if (results.length === 0) {
-      return res.status(401).json({error:"Usuario no encontrado o inactivo"});
+      return res
+        .status(401)
+        .json({ error: "Usuario no encontrado o inactivo" });
     }
 
     const user = results[0];
@@ -33,7 +35,7 @@ router.post("/login", (req, res) => {
       // Redirigir a inicio.html
       return res.json({ success: true, redirect: "/HTML/inicio.html" });
     } else {
-      return res.status(401).json({error: "Contraseña incorrecta"});
+      return res.status(401).json({ error: "Contraseña incorrecta" });
     }
   });
 });
@@ -47,13 +49,13 @@ router.post("/register", (req, res) => {
     fecha_nacimiento,
     telefono,
     direccion,
-    gmail,
+    email,
     obra_social,
     nombre_usuario, // <- agregar al formulario
     contrasena, // <- agregar al formulario
   } = req.body;
 
-  if (!gmail || !nombre_usuario || !contrasena) {
+  if (!email || !nombre_usuario || !contrasena) {
     console.error("Faltan datos obligatorios para el registro");
     return res.status(400).json({ error: "Faltan datos obligatorios" });
   }
@@ -64,11 +66,13 @@ router.post("/register", (req, res) => {
 
   conexion.query(
     insertarPersona,
-    [nombre, apellido, dni, fecha_nacimiento, telefono, direccion, gmail],
+    [nombre, apellido, dni, fecha_nacimiento, telefono, direccion, email],
     (err, resultadoPersona) => {
       if (err) {
         console.error("Error al insertar en persona:", err);
-        return res.status(500).json({ error: "Error alguno de los datos ya existen" });
+        return res
+          .status(500)
+          .json({ error: "Error alguno de los datos ya existen" });
       }
 
       const idPersona = resultadoPersona.insertId;
@@ -83,7 +87,9 @@ router.post("/register", (req, res) => {
         (err2, resultadoPaciente) => {
           if (err2) {
             console.error("Error al insertar en paciente:", err2);
-            return res.status(500).json({ error: "Error al registrar paciente" });
+            return res
+              .status(500)
+              .json({ error: "Error al registrar paciente" });
           }
 
           const insertarUsuario = `
@@ -96,7 +102,9 @@ router.post("/register", (req, res) => {
             (err3, resultadoUsuario) => {
               if (err3) {
                 console.error("Error al insertar en usuario:", err3);
-                return res.status(500).json({ error: "Error al registrar usuario" });
+                return res
+                  .status(500)
+                  .json({ error: "Error al registrar usuario" });
               }
               // Redirigir a inicio.html después de registrar exitosamente
               res.json({ success: true, redirect: "/HTML/inicio.html" });
@@ -109,6 +117,8 @@ router.post("/register", (req, res) => {
 });
 
 // ------------------------------------------------------
+//--------------------------------------------------------
+
 // Obtener especialidades
 router.get("/especialidades", (req, res) => {
   conexion.query(
@@ -160,12 +170,19 @@ router.get("/horarios-disponibles", (req, res) => {
   ];
   // Corregido: calcular día de la semana en UTC para evitar errores de zona horaria
   const fechaObj = new Date(fecha + "T12:00:00Z"); // Mediodía UTC
-  console.log("[DEBUG] fechaObj ISO:", fechaObj.toISOString(), "getUTCDay():", fechaObj.getUTCDay());
+  console.log(
+    "[DEBUG] fechaObj ISO:",
+    fechaObj.toISOString(),
+    "getUTCDay():",
+    fechaObj.getUTCDay()
+  );
   let diaNombre = diasSemana[fechaObj.getUTCDay()];
   // Parche temporal: si la fecha es 2025-06-02, forzar Lunes
   if (fecha === "2025-06-02") {
     diaNombre = "Lunes";
-    console.log("[DEBUG] Parche aplicado: Forzando diaNombre a Lunes para 2025-06-02");
+    console.log(
+      "[DEBUG] Parche aplicado: Forzando diaNombre a Lunes para 2025-06-02"
+    );
   }
   console.log(
     "[DEBUG] diaNombre:",
@@ -188,7 +205,9 @@ router.get("/horarios-disponibles", (req, res) => {
       if (error)
         return res.status(500).json({ error: "Error en la base de datos" });
       if (results.length === 0) {
-        console.log("[DEBUG] No se encontró horario_disponible para ese profesional y día");
+        console.log(
+          "[DEBUG] No se encontró horario_disponible para ese profesional y día"
+        );
         return res.json([]);
       }
 
@@ -208,22 +227,44 @@ router.get("/horarios-disponibles", (req, res) => {
           }
 
           // 3. Generar los intervalos de 30 minutos usando lógica similar a generarIntervalos, pero con fecha base fija
-          console.log("[DEBUG] hora_inicio (raw):", hora_inicio, typeof hora_inicio);
+          console.log(
+            "[DEBUG] hora_inicio (raw):",
+            hora_inicio,
+            typeof hora_inicio
+          );
           console.log("[DEBUG] hora_fin (raw):", hora_fin, typeof hora_fin);
-          const [inicioHoras, inicioMinutos] = String(hora_inicio).split(":").map(Number);
-          const [finHoras, finMinutos] = String(hora_fin).split(":").map(Number);
+          const [inicioHoras, inicioMinutos] = String(hora_inicio)
+            .split(":")
+            .map(Number);
+          const [finHoras, finMinutos] = String(hora_fin)
+            .split(":")
+            .map(Number);
           let fechaInicio = new Date(`2000-01-01T${hora_inicio}`);
           let fechaFin = new Date(`2000-01-01T${hora_fin}`);
-          console.log("[DEBUG] fechaInicio:", fechaInicio, "fechaFin:", fechaFin);
+          console.log(
+            "[DEBUG] fechaInicio:",
+            fechaInicio,
+            "fechaFin:",
+            fechaFin
+          );
+
+          let horarios = [];
           let count = 0;
           while (fechaInicio < fechaFin && count < 20) {
             const horaStr = fechaInicio.toTimeString().substring(0, 5) + ":00";
             let siguiente = new Date(fechaInicio.getTime() + 30 * 60000);
-            let horaFinStr = siguiente <= fechaFin ? siguiente.toTimeString().substring(0, 5) + ":00" : fechaFin.toTimeString().substring(0, 5) + ":00";
-            console.log(`[DEBUG] Slot ${count+1}: hora_inicio=${horaStr}, hora_fin=${horaFinStr}`);
+            let horaFinStr =
+              siguiente <= fechaFin
+                ? siguiente.toTimeString().substring(0, 5) + ":00"
+                : fechaFin.toTimeString().substring(0, 5) + ":00";
+            console.log(
+              `[DEBUG] Slot ${
+                count + 1
+              }: hora_inicio=${horaStr}, hora_fin=${horaFinStr}`
+            );
             horarios.push({
               hora_inicio: horaStr,
-              hora_fin: horaFinStr
+              hora_fin: horaFinStr,
             });
             if (siguiente >= fechaFin) break;
             fechaInicio = siguiente;
@@ -301,12 +342,12 @@ router.get("/dias-disponibles", (req, res) => {
         "2025-08-18", // Paso a la Inmortalidad de San Martín (trasladado)
         "2025-10-13", // Diversidad Cultural (trasladado)
         "2025-12-08", // Inmaculada Concepción
-        "2025-12-25"  // Navidad
+        "2025-12-25", // Navidad
       ];
-      const fechasNoFeriado = fechas.filter(f => !feriados2025.includes(f));
+      const fechasNoFeriado = fechas.filter((f) => !feriados2025.includes(f));
       if (fechasNoFeriado.length === 0) return res.json([]);
       // Solo fechas a partir de hoy y máximo 10 turnos por día
-      const placeholders = fechasNoFeriado.map(() => '?').join(',');
+      const placeholders = fechasNoFeriado.map(() => "?").join(",");
       conexion.query(
         `SELECT DATE(fecha_hora) as fecha, COUNT(*) as cantidad
          FROM turno

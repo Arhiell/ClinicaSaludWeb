@@ -7,14 +7,9 @@
     <link rel="stylesheet" href="CSS/Login.css" />
   </head>
   <body>
- 
     <div class="login-container">
       <div class="login-card active" id="loginForm">
-        <img
-          class="logo"
-          src="\img\logotipo.avif"
-          alt="Logo Clínica Goya"
-        />
+        <img class="logo" src="\img\logotipo.avif" alt="Logo Clínica Goya" />
         <h2>Iniciar Sesión</h2>
         <form id="login-form" action="/login" method="POST">
           <input
@@ -45,7 +40,7 @@
           <input type="text" name="nombre" placeholder="Nombre" required />
           <input type="text" name="apellido" placeholder="Apellido" required />
           <input type="text" name="dni" placeholder="DNI" required />
-          <input type="email" name="gmail" placeholder="email" required />
+          <input type="email" name="email" placeholder="email" required />
           <input type="text" name="telefono" placeholder="Teléfono" />
           <input type="text" name="direccion" placeholder="Dirección" />
           <input type="date" name="fecha_nacimiento" required />
@@ -82,66 +77,68 @@
         document.getElementById("registerForm").classList.remove("active");
         document.getElementById("loginForm").classList.add("active");
       }
-  // Manejo del formulario de login
-  document.getElementById("login-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
+      // Manejo del formulario de login
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-    const form = e.target;
-    const usuario = form.usuario.value;
-    const password = form.password.value;
+          const form = e.target;
+          const usuario = form.usuario.value;
+          const password = form.password.value;
 
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ usuario, password })
-    });
+          const res = await fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ usuario, password }),
+          });
 
-    const data = await res.json();
+          const data = await res.json();
 
-    if (res.ok && data.redirect) {
-      window.location.href = data.redirect;
-    } else {
-      document.getElementById("login-error").textContent = data.error;
-    }
-  });
-  // Manejo del formulario de registro
-document.getElementById("register-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+          if (res.ok && data.redirect) {
+            window.location.href = data.redirect;
+          } else {
+            document.getElementById("login-error").textContent = data.error;
+          }
+        });
+      // Manejo del formulario de registro
+      document
+        .getElementById("register-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-  const form = e.target;
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
+          const form = e.target;
+          const formData = new FormData(form);
+          const data = Object.fromEntries(formData.entries());
 
-  const res = await fetch("/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+          const res = await fetch("/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
 
-  const json = await res.json();
+          const json = await res.json();
 
-  // Mostrar mensajes de error o éxito
-  const errorMsg = document.getElementById("register-error");
-  const successMsg = document.getElementById("register-success");
+          // Mostrar mensajes de error o éxito
+          const errorMsg = document.getElementById("register-error");
+          const successMsg = document.getElementById("register-success");
 
-  errorMsg.textContent = "";
-  successMsg.textContent = "";
+          errorMsg.textContent = "";
+          successMsg.textContent = "";
 
-  if (res.ok && json.redirect) {
-    successMsg.textContent = "¡Registro exitoso! Redirigiendo...";
-    setTimeout(() => {
-      window.location.href = json.redirect;
-    }, 2000); // Espera 2 segundos antes de redirigir
-  } else {
-    errorMsg.textContent = json.error || "Error en el registro.";
-  }
-});
-
-</script>
-
+          if (res.ok && json.redirect) {
+            successMsg.textContent = "¡Registro exitoso! Redirigiendo...";
+            setTimeout(() => {
+              window.location.href = json.redirect;
+            }, 2000); // Espera 2 segundos antes de redirigir
+          } else {
+            errorMsg.textContent = json.error || "Error en el registro.";
+          }
+        });
+    </script>
   </body>
 </html>
