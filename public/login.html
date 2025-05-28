@@ -16,7 +16,7 @@
           alt="Logo Clínica Goya"
         />
         <h2>Iniciar Sesión</h2>
-        <form action="/login" method="POST">
+        <form id="login-form" action="/login" method="POST">
           <input
             type="text"
             name="usuario"
@@ -30,6 +30,8 @@
             required
           />
           <button type="submit">Ingresar</button>
+          <!--- mensaje de error -->
+          <p id="login-error" class="error-msg"></p>
         </form>
         <p>
           ¿No tienes cuenta?
@@ -78,6 +80,31 @@
         document.getElementById("registerForm").classList.remove("active");
         document.getElementById("loginForm").classList.add("active");
       }
-    </script>
+  // Manejo del formulario de login
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const usuario = form.usuario.value;
+    const password = form.password.value;
+
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ usuario, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.redirect) {
+      window.location.href = data.redirect;
+    } else {
+      document.getElementById("login-error").textContent = data.error;
+    }
+  });
+</script>
+
   </body>
 </html>

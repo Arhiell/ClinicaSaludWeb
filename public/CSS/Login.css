@@ -128,3 +128,9 @@ body {
   border-radius: 8px;
   margin: 10px auto;
 }
+.error-msg {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+}
