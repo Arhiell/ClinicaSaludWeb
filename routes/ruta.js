@@ -1,23 +1,29 @@
-// routee/authPlugins.js
+// routee/ruta.js
+
 const express = require("express");
 const router = express.Router();
 const conexion = require("../db/conexion");
+
+// -----------------------------------------------------------------
+//           INICIO DE SECCION POR PARTE DEL PACIENTE
+//------------------------------------------------------------------
 
 // Login de usuarios
 router.post("/login", (req, res) => {
   const { usuario, password } = req.body;
 
   const sql = `
-    SELECT u.*, p.nombre, p.apellido, p.id_rol
+    SELECT u.*, p.nombre, p.apellido, p.id_rol, p.email, p.telefono, p.direccion, pa.id_paciente
     FROM usuario u
     JOIN persona p ON u.id_persona = p.id_persona
-    WHERE u.nombre_usuario = ?
+    LEFT JOIN paciente pa ON p.id_persona = pa.id_persona -- Unir con paciente para obtener id_paciente si es paciente
+    WHERE u.nombre_usuario = ? AND u.id_estado = 1 -- Asumiendo id_estado 1 es activo
     LIMIT 1
   `;
 
   conexion.query(sql, [usuario], (err, results) => {
     if (err) {
-      console.error("Error en la consulta:", err);
+      console.error("Error en la consulta de login:", err);
       return res.status(500).json({ error: "Error en el servidor" });
     }
 
@@ -29,9 +35,26 @@ router.post("/login", (req, res) => {
 
     const user = results[0];
 
-    // Comparar contraseña en texto plano (temporal)
+    // Comparar contraseña en texto plano (temporal) - Considera usar hashing en producción
     if (password === user.contrasena) {
       console.log("Usuario autenticado:", user.nombre_usuario);
+
+      //Guardar datos del usuario en la sesión ***
+      req.session.user = {
+        id_usuario: user.id_usuario,
+        nombre_usuario: user.nombre_usuario,
+        id_persona: user.id_persona,
+        id_rol: user.id_rol,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+        telefono: user.telefono,
+        direccion: user.direccion,
+        id_paciente: user.id_paciente, // Guardar id_paciente si existe (si el usuario es paciente)
+      };
+      console.log("Datos de usuario guardados en sesión:", req.session.user);
+      // **************************************************************
+
       // Redirigir a inicio.html
       return res.json({ success: true, redirect: "/HTML/inicio.html" });
     } else {
@@ -40,6 +63,9 @@ router.post("/login", (req, res) => {
   });
 });
 
+// --------------------------------------------------------------------------
+//       RESGISTRAR AL NUEVO PACIENTE CON SUS CONTRASEÑA Y NOMBRE DE USUARIO
+//---------------------------------------------------------------------------
 // Registro de pacientes
 router.post("/register", (req, res) => {
   const {
@@ -61,7 +87,7 @@ router.post("/register", (req, res) => {
   }
 
   const insertarPersona = `
-  INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, telefono, direccion, gmail, id_rol, id_estado)
+  INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, telefono, direccion, email, id_rol, id_estado)
   VALUES (?, ?, ?, ?, ?, ?, ?, 4, 1)`; // 4: Rol paciente
 
   conexion.query(
@@ -116,8 +142,9 @@ router.post("/register", (req, res) => {
   );
 });
 
-// ------------------------------------------------------
-//--------------------------------------------------------
+// -----------------------------------------------------------------
+//       OPTENER LAS EPECIALIDADES, ESPCAILISTAS, DIAS Y HORARIO
+//------------------------------------------------------------------
 
 // Obtener especialidades
 router.get("/especialidades", (req, res) => {
@@ -366,6 +393,233 @@ router.get("/dias-disponibles", (req, res) => {
       );
     }
   );
+});
+
+// -----------------------------------------------------------------
+//      REGISTRAR DE TURNO PARA UN MENOR
+//------------------------------------------------------------------
+
+router.post("/guardar-turno", async (req, res) => {
+  let fechaHoraTurno;
+  const { idProfesional, fecha, hora, menor } = req.body;
+  // Obtener datos del usuario logueado desde la sesión
+  const usuarioLogueado = req.session?.user;
+
+  if (!idProfesional || !fecha || !hora) {
+    return res
+      .status(400)
+      .json({ error: "Faltan datos obligatorios del turno." });
+  }
+
+  // Validar si el usuario está logueado para obtener el id_persona o si se está registrando un menor
+  if (!usuarioLogueado && !menor) {
+    return res.status(401).json({ error: "Usuario no autenticado." });
+  }
+
+  try {
+    let idPacientePersonaTurno; // Variable para almacenar el id_persona del paciente del turno (adulto o menor)
+
+    // Si es un turno para el usuario logueado (adulto)
+    if (!menor) {
+      // *** MODIFICACIÓN AQUÍ: Usamos id_persona del usuario logueado ***
+      if (!usuarioLogueado?.id_persona) {
+        console.error(
+          "Usuario logueado no tiene id_persona en la sesión:",
+          usuarioLogueado
+        );
+        return res.status(401).json({
+          error: "El usuario logueado no está registrado correctamente.",
+        });
+      }
+      idPacientePersonaTurno = usuarioLogueado.id_persona; // Usamos id_persona
+    } else {
+      // Si es un turno para un menor
+      console.log("Intentando registrar turno para menor:", menor);
+
+      const idTutorPersona = usuarioLogueado?.id_persona;
+      const emailTutor = usuarioLogueado?.email;
+      const telefonoTutor = usuarioLogueado?.telefono || null;
+      const direccionTutor = usuarioLogueado?.direccion || null;
+      const estadoActivo = 1;
+
+      if (!idTutorPersona || !emailTutor) {
+        return res
+          .status(401)
+          .json({ error: "Datos del tutor no disponibles en la sesión." });
+      }
+
+      // --- Lógica para registrar menor y asegurar registro de tutor ---
+
+      let idTutor;
+
+      // 1. Buscar si el usuario logueado ya es tutor
+      const [tutorRows] = await conexion
+        .promise()
+        .query(
+          `SELECT id_tutor FROM tutor WHERE id_persona = ? AND id_estado = ?`,
+          [idTutorPersona, estadoActivo]
+        );
+
+      if (tutorRows.length > 0) {
+        // Si ya es tutor, obtenemos su id_tutor
+        idTutor = tutorRows[0].id_tutor;
+        console.log(
+          `[DEBUG] Tutor existente encontrado con id_tutor: ${idTutor}`
+        );
+      } else {
+        // Si no es tutor, lo registramos en la tabla tutor
+        console.log(
+          `[DEBUG] Usuario con id_persona: ${idTutorPersona} no encontrado como tutor. Creando registro.`
+        );
+        const insertarTutor = `
+            INSERT INTO tutor (id_persona, id_estado)
+            VALUES (?, ?)`;
+        const [tutorResult] = await conexion
+          .promise()
+          .query(insertarTutor, [idTutorPersona, estadoActivo]);
+        idTutor = tutorResult.insertId;
+        console.log(`[DEBUG] Nuevo tutor registrado con id_tutor: ${idTutor}`);
+      }
+
+      // 2. Buscar si el menor ya existe por DNI
+      const [menorPersonaRows] = await conexion.promise().query(
+        `SELECT p.id_persona, pa.id_paciente
+             FROM persona p
+             JOIN paciente pa ON p.id_persona = pa.id_persona
+             WHERE p.dni = ? AND p.id_rol = 4 AND p.id_estado = ?`, // Rol 4 para paciente
+        [menor.dni, estadoActivo]
+      );
+
+      let idMenorPersona;
+      let idMenorPaciente;
+
+      if (menorPersonaRows.length > 0) {
+        // Si el menor ya existe
+        console.log(`[DEBUG] Menor existente encontrado con DNI: ${menor.dni}`);
+        idMenorPersona = menorPersonaRows[0].id_persona;
+        idMenorPaciente = menorPersonaRows[0].id_paciente;
+        idPacientePersonaTurno = idMenorPersona; // Usamos el id_persona existente del menor
+
+        // Asegurarnos de que la relación paciente_tutor exista
+        const [pacienteTutorRows] = await conexion
+          .promise()
+          .query(
+            `SELECT * FROM paciente_tutor WHERE id_paciente = ? AND id_tutor = ?`,
+            [idMenorPaciente, idTutor]
+          );
+        if (pacienteTutorRows.length === 0) {
+          // Si la relación no existe, la creamos
+          console.log(
+            `[DEBUG] Relación paciente_tutor no encontrada. Creando relación entre paciente ${idMenorPaciente} y tutor ${idTutor}`
+          );
+          await conexion
+            .promise()
+            .query(
+              `INSERT INTO paciente_tutor (id_paciente, id_tutor) VALUES (?, ?)`,
+              [idMenorPaciente, idTutor]
+            );
+        } else {
+          console.log(
+            `[DEBUG] Relación paciente_tutor ya existe entre paciente ${idMenorPaciente} y tutor ${idTutor}`
+          );
+        }
+      } else {
+        // Si el menor NO existe, lo registramos
+        console.log(
+          `[DEBUG] Menor con DNI: ${menor.dni} no encontrado. Registrando nuevo menor.`
+        );
+
+        // Generar email único para el menor a partir del email del tutor
+        const emailMenor = `${emailTutor.split("@")[0]}+menor${Math.floor(
+          Math.random() * 10000
+        )}@${emailTutor.split("@")[1]}`;
+
+        // Insertar al menor en la tabla persona
+        const insertarPersonaMenor = `
+              INSERT INTO persona (dni, nombre, apellido, email, telefono, direccion, id_estado, fecha_nacimiento, id_rol)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, 4)`; // Rol 4 para paciente
+        const [personaResult] = await conexion
+          .promise()
+          .query(insertarPersonaMenor, [
+            menor.dni,
+            menor.nombre,
+            menor.apellido,
+            emailMenor,
+            telefonoTutor, // Usar datos del tutor
+            direccionTutor, // Usar datos del tutor
+            estadoActivo,
+            menor.fechaNacimiento,
+          ]);
+        idMenorPersona = personaResult.insertId;
+        console.log(
+          `[DEBUG] Menor insertado en persona con id_persona: ${idMenorPersona}`
+        );
+
+        // Insertar al menor en paciente
+        const insertarPacienteMenor = `
+               INSERT INTO paciente (id_persona, obra_social, id_estado)
+               VALUES (?, ?, ?)`;
+        // Asume que obraSocialMenor viene en los datos del menor si aplica, o es null
+        const obraSocialMenor = menor.obraSocial || null; // Asegúrate de que el frontend envíe esto si es necesario
+        const [pacienteResult] = await conexion
+          .promise()
+          .query(insertarPacienteMenor, [
+            idMenorPersona,
+            obraSocialMenor,
+            estadoActivo,
+          ]);
+        idMenorPaciente = pacienteResult.insertId; // El turno será para este nuevo paciente (el menor)
+        idPacientePersonaTurno = idMenorPersona; // Usamos el id_persona recién creado del menor
+        console.log(
+          `[DEBUG] Menor insertado en paciente con id_paciente: ${idMenorPaciente}`
+        );
+
+        // Insertar la relación paciente_tutor
+        await conexion.promise().query(
+          `INSERT INTO paciente_tutor (id_paciente, id_tutor)
+                VALUES (?, ?)`,
+          [idMenorPaciente, idTutor]
+        );
+        console.log(
+          `[DEBUG] Relación paciente_tutor creada entre paciente ${idMenorPaciente} y tutor ${idTutor}`
+        );
+      }
+
+      // --- Fin Lógica para registrar menor y asegurar registro de tutor ---
+    }
+
+    // 6. Combinar fecha y hora para el campo fecha_hora en la base de datos
+    // La hora ahora viene solo como HH:MM desde el frontend
+    const fechaHoraTurno = `${fecha} ${hora}`; // ejemplo: '2025-06-02 12:00:00'
+
+    const fechaHora = `${fecha} ${hora}`; // Formato YYYY-MM-DD HH:MM
+
+    // 7. Insertar el turno en la base de datos
+    const insertarTurno = `
+      INSERT INTO turno (id_paciente, id_profesional, fecha_hora, duracion, id_estado)
+      VALUES (?, ?, ?, ?, 1)`; // Asume id_estado 1 para turno activo, y duracion fija (ej: 30 min)
+
+    // *** MODIFICACIÓN AQUÍ: Usar idPacientePersonaTurno y idProfesional (que es id_persona del profesional) ***
+    // *** También añadimos una duración fija, ya que no se obtiene del frontend ***
+    const duracionTurno = 30; // Define una duración por defecto en minutos
+
+    await conexion.promise().query(insertarTurno, [
+      idPacientePersonaTurno, // Usamos el id_persona del paciente (adulto o menor)
+      idProfesional, // Este ya es el id_persona del profesional según tu consulta /profesionales
+      fechaHoraTurno,
+      duracionTurno, // Añadimos la duración
+    ]);
+    console.log(
+      `[DEBUG] Turno registrado para paciente (id_persona) ${idPacientePersonaTurno} con profesional (id_persona) ${idProfesional} en ${fechaHoraTurno}`
+    );
+
+    res.json({ success: true, message: "Turno registrado con éxito" });
+  } catch (error) {
+    console.error("Error al guardar el turno:", error);
+    res
+      .status(500)
+      .json({ error: "Ocurrió un error al intentar registrar el turno." });
+  }
 });
 
 module.exports = router;
