@@ -398,7 +398,7 @@ router.get("/dias-disponibles", (req, res) => {
 // -----------------------------------------------------------------
 //      REGISTRAR DE TURNO PARA UN MENOR
 //------------------------------------------------------------------
-
+// Comienzo y Guardardado de turno
 router.post("/guardar-turno", async (req, res) => {
   let fechaHoraTurno;
   const { idProfesional, fecha, hora, menor } = req.body;
@@ -589,28 +589,42 @@ router.post("/guardar-turno", async (req, res) => {
     }
 
     // 6. Combinar fecha y hora para el campo fecha_hora en la base de datos
-    // La hora ahora viene solo como HH:MM desde el frontend
     const fechaHoraTurno = `${fecha} ${hora}`; // ejemplo: '2025-06-02 12:00:00'
+    const duracionTurno = 30; // Define una duración por defecto en minutos
 
-    const fechaHora = `${fecha} ${hora}`; // Formato YYYY-MM-DD HH:MM
+    // === GENERAR COMPROBANTE AUTOMÁTICO ===
+    // Explicación: Este bloque genera un comprobante único para cada turno, siguiendo el formato ST-YYYYMMDD-XXXXXX.
+    // El número correlativo se obtiene consultando cuántos turnos existen para la fecha actual y sumando 1.
+    const fechaActual = new Date();
+    const yyyy = fechaActual.getFullYear();
+    const mm = String(fechaActual.getMonth() + 1).padStart(2, "0");
+    const dd = String(fechaActual.getDate()).padStart(2, "0");
+    const fechaComprobante = `${yyyy}${mm}${dd}`;
+
+    // Consultar la cantidad de turnos generados hoy para crear el correlativo
+    const [turnosHoy] = await conexion.promise().query(
+      `SELECT COUNT(*) AS cantidad FROM turno WHERE DATE(fecha_creacion) = CURDATE()`
+    );
+    const correlativo = String(turnosHoy[0].cantidad + 1).padStart(6, "0");
+    const comprobante = `ST-${fechaComprobante}-${correlativo}`;
+
+    // === FIN GENERAR COMPROBANTE ===
 
     // 7. Insertar el turno en la base de datos
     const insertarTurno = `
-      INSERT INTO turno (id_paciente, id_profesional, fecha_hora, duracion, id_estado)
-      VALUES (?, ?, ?, ?, 1)`; // Asume id_estado 1 para turno activo, y duracion fija (ej: 30 min)
-
-    // *** MODIFICACIÓN AQUÍ: Usar idPacientePersonaTurno y idProfesional (que es id_persona del profesional) ***
-    // *** También añadimos una duración fija, ya que no se obtiene del frontend ***
-    const duracionTurno = 30; // Define una duración por defecto en minutos
+      INSERT INTO turno (comprobante, id_paciente, id_profesional, fecha_hora, duracion, id_estado)
+      VALUES (?, ?, ?, ?, ?, 1)`; // 1: Estado activo
 
     await conexion.promise().query(insertarTurno, [
-      idPacientePersonaTurno, // Usamos el id_persona del paciente (adulto o menor)
-      idProfesional, // Este ya es el id_persona del profesional según tu consulta /profesionales
+      comprobante,
+      idPacientePersonaTurno, // id_persona del paciente (adulto o menor)
+      idProfesional,          // id_persona del profesional
       fechaHoraTurno,
-      duracionTurno, // Añadimos la duración
+      duracionTurno
     ]);
+
     console.log(
-      `[DEBUG] Turno registrado para paciente (id_persona) ${idPacientePersonaTurno} con profesional (id_persona) ${idProfesional} en ${fechaHoraTurno}`
+      `[DEBUG] Turno registrado con comprobante ${comprobante} para paciente (id_persona) ${idPacientePersonaTurno} con profesional (id_persona) ${idProfesional} en ${fechaHoraTurno}`
     );
 
     res.json({ success: true, message: "Turno registrado con éxito" });
