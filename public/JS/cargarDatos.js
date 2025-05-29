@@ -1,4 +1,5 @@
 // ruta: public/JS/cargarDatos.js
+
 document.getElementById("doctor").addEventListener("change", function () {
   console.log("Evento change de especialista disparado");
   const idProfesional = this.value;
@@ -78,9 +79,80 @@ document.getElementById("fecha").addEventListener("change", function () {
       console.log("Horarios recibidos del backend:", data);
       data.forEach((horario) => {
         const option = document.createElement("option");
-        option.value = horario.hora_inicio + " - " + horario.hora_fin;
+        // *** MODIFICACIÓN AQUÍ: Usar solo hora_inicio como valor ***
+        option.value = horario.hora_inicio;
+        // *********************************************************
         option.textContent = horario.hora_inicio + " - " + horario.hora_fin;
         selectHora.appendChild(option);
       });
+    });
+});
+
+//  Guardar el turno en la base de datos.
+document.getElementById("formTurno").addEventListener("submit", (e) => {
+  e.preventDefault(); // evita que recargue la página
+
+  const idProfesional = document.getElementById("doctor").value;
+  const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value; // Ahora solo contendrá la hora de inicio
+
+  const esMenor = document.getElementById("turnoMenor").checked;
+
+  const datosTurno = {
+    idProfesional,
+    fecha,
+    hora,
+  };
+
+  // Si es para menor, agregamos los datos del menor
+  if (esMenor) {
+    datosTurno.menor = {
+      nombre: document.getElementById("nombreMenor").value,
+      apellido: document.getElementById("apellidoMenor").value,
+      dni: document.getElementById("dniMenor").value,
+      fechaNacimiento: document.getElementById("fechaNacimientoMenor").value,
+      relacion: document.getElementById("relacion").value,
+      // Asegúrate de incluir obraSocialMenor si es necesario para el registro del menor
+      obraSocial: document.getElementById("obraSocialMenor")?.value || null,
+    };
+  }
+
+  // Validar campos básicos
+  if (!idProfesional || !fecha || !hora) {
+    alert("Por favor completá todos los campos del turno.");
+    return;
+  }
+
+  // Validar datos del menor si aplica
+  if (
+    esMenor &&
+    (!datosTurno.menor.nombre ||
+      !datosTurno.menor.apellido ||
+      !datosTurno.menor.dni ||
+      !datosTurno.menor.fechaNacimiento ||
+      !datosTurno.menor.relacion)
+  ) {
+    alert("Por favor completá todos los datos del menor.");
+    return;
+  }
+
+  fetch("/guardar-turno", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datosTurno),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Turno registrado con éxito");
+        document.getElementById("formTurno").reset();
+        document.getElementById("seccionMenor").style.display = "none";
+      } else {
+        alert("Error al registrar turno: " + data.error);
+      }
+    })
+    .catch((err) => {
+      console.error("Error al guardar el turno:", err);
+      alert("Ocurrió un error al intentar registrar el turno.");
     });
 });

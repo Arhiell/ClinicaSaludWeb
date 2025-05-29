@@ -61,13 +61,16 @@
           </label>
 
           <div id="seccionMenor" style="display: none">
-            <label for="nombreMenor">Nombre completo del menor:</label>
+            <label for="nombreMenor">Nombre Completo del Menor:</label>
             <input type="text" id="nombreMenor" name="nombreMenor" />
 
-            <label for="dniMenor">DNI del menor:</label>
+            <label for="apellidoMenor">Apellido del Menor:</label>
+            <input type="text" id="apellidoMenor" name="apellidoMenor" />
+
+            <label for="dniMenor">DNI del Menor:</label>
             <input type="text" id="dniMenor" name="dniMenor" />
 
-            <label for="fechaNacimientoMenor">Fecha de nacimiento:</label>
+            <label for="fechaNacimientoMenor">Fecha de Nacimiento:</label>
             <input
               type="date"
               id="fechaNacimientoMenor"
@@ -76,12 +79,9 @@
 
             <label for="relacion">Relación con el menor:</label>
             <input type="text" id="relacion" name="relacion" />
-
-            <label for="motivo">Motivo de la consulta:</label>
-            <input type="text" id="motivo" name="motivo" />
           </div>
 
-          <button type="submit">Solicitar Turno</button>
+          <button type="submit" id="confirmarTurno">Solicitar Turno</button>
         </form>
       </div>
     </main>
