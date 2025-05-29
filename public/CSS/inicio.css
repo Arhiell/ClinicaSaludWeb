@@ -172,3 +172,19 @@ nav ul.menu li a.cerrarSesion:focus {
   margin-right: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+#listaTurnos {
+  width: 100%;
+  border-collapse: collapse;
+}
+#listaTurnos th,
+#listaTurnos td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+#listaTurnos th {
+  background-color: #0a74da;
+  color: white;
+}
+.oculto {
+  display: none;
+}

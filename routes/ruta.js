@@ -143,7 +143,7 @@ router.post("/register", (req, res) => {
 });
 
 // -----------------------------------------------------------------
-//       OPTENER LAS EPECIALIDADES, ESPCAILISTAS, DIAS Y HORARIO
+//       OPTENER LAS EPECIALIDADES, ESPECIALISTAS, DIAS Y HORARIO
 //------------------------------------------------------------------
 
 // Obtener especialidades
@@ -635,5 +635,46 @@ router.post("/guardar-turno", async (req, res) => {
       .json({ error: "Ocurrió un error al intentar registrar el turno." });
   }
 });
+//  -----------------------------------------------------------------
+//       OPTENER LOS TURNOS DEL PACIENTE LOGUEADO
+//------------------------------------------------------------------
+router.get("/turnos-paciente", async (req, res) => {
+  if (!req.session.user) {
+    console.error("[DEBUG] Usuario no autenticado al intentar obtener turnos");
+    return res.status(401).json({ error: "No autorizado" });// Verificar si el usuario está logueado
+  }
+  
+  try {
+    const idPaciente = req.session.user.id_persona; // Debe ser id_paciente
+
+    const [turnos] = await conexion.promise().query(
+      `SELECT 
+         t.comprobante,
+         t.fecha_hora,
+         CONCAT(p_medico.nombre, ' ', p_medico.apellido) AS medico,
+         e.nombre AS especialidad,
+         es.nombre AS estado
+       FROM turno t
+       JOIN persona p_medico ON t.id_profesional = p_medico.id_persona
+       JOIN profesional prof ON prof.id_persona = p_medico.id_persona
+       JOIN especialidad e ON prof.id_especialidad = e.id_especialidad
+       JOIN estado es ON t.id_estado = es.id_estado
+       WHERE t.id_paciente = ?`,
+      [idPaciente]
+    );
+    
+    console.log(
+      `[DEBUG] Turnos obtenidos para paciente (id_persona) ${idPaciente}:`,
+      turnos
+    );
+    res.json({ success: true, data: turnos });// Devolver los turnos del paciente
+  } catch (error) {
+    console.error("[DEBUG] Error al obtener los turnos del paciente:", error);
+    res.status(500).json({ error: "Ocurrió un error al intentar obtener los turnos." });
+  }
+});
+// -----------------------------------------------------------------
+//        MOSTRAR LOS DATOS DEL PACIENTE LOGUEADO Y MODIFICARLOS
+//------------------------------------------------------------------
 
 module.exports = router;

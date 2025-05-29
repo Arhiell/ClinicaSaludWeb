@@ -83,5 +83,14 @@
     </footer>
 
     <script src="../JS/misDatos.js"></script>
+      <script>
+        function cerrarSesion() {
+          // Si usás localStorage o sessionStorage
+          sessionStorage.clear(); // o localStorage.clear();
+
+          // Redirigís al login
+          window.location.href = "../login.html";
+        }
+      </script>
   </body>
 </html>
