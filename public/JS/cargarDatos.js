@@ -1,5 +1,16 @@
 // ruta: public/JS/cargarDatos.js
 
+function cerrarSesion() {
+  sessionStorage.clear();
+  window.location.href = "../login.html";
+}
+
+// Mostrar u ocultar sección del menor
+document.getElementById("turnoMenor").addEventListener("change", function () {
+  const seccion = document.getElementById("seccionMenor");
+  seccion.style.display = this.checked ? "block" : "none";
+});
+
 document.getElementById("doctor").addEventListener("change", function () {
   console.log("Evento change de especialista disparado");
   const idProfesional = this.value;

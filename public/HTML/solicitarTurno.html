@@ -10,6 +10,7 @@
   <body>
     <header>
       <div class="logo">Clínica Goya</div>
+      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
       <nav>
         <ul class="menu">
           <li><a href="../HTML/inicio.html">Inicio</a></li>
@@ -91,20 +92,7 @@
       <p>Teléfono: (03777) 123456 - Email: contacto@clinicagoya.com</p>
     </footer>
 
-    <script>
-      function cerrarSesion() {
-        sessionStorage.clear();
-        window.location.href = "../login.html";
-      }
-
-      // Mostrar u ocultar sección del menor
-      document
-        .getElementById("turnoMenor")
-        .addEventListener("change", function () {
-          const seccion = document.getElementById("seccionMenor");
-          seccion.style.display = this.checked ? "block" : "none";
-        });
-    </script>
     <script src="/JS/cargarDatos.js"></script>
+    <script src="../JS/menuDesple.js"></script>
   </body>
 </html>

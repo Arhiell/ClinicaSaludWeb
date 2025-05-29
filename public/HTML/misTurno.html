@@ -9,6 +9,7 @@
   <body>
     <header>
       <div class="logo">Clínica Goya</div>
+      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
       <nav>
         <ul class="menu">
           <li><a href="../HTML/inicio.html">Inicio</a></li>
@@ -37,14 +38,6 @@
       <p>Teléfono: (03777) 123456 - Email: contacto@clinicagoya.com</p>
     </footer>
 
-    <script>
-      function cerrarSesion() {
-        // Si usás localStorage o sessionStorage
-        sessionStorage.clear(); // o localStorage.clear();
-
-        // Redirigís al login
-        window.location.href = "../login.html";
-      }
-    </script>
+    <script src="../JS/menuDesple.js"></script>
   </body>
 </html>

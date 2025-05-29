@@ -8,7 +8,7 @@
 /* Body general */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f4f8; /* gris muy claro */
+  background-color: #f0f4f8;
   color: #333;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@ body {
 
 /* Header */
 header {
-  background: linear-gradient(90deg, #0a74da, #004a99); /* azul degradado */
+  background: linear-gradient(90deg, #0a74da, #004a99);
   color: white;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@ header {
   z-index: 10;
 }
 
-/* Contenedor logo con icono */
+/* Logo */
 .logo {
   display: flex;
   align-items: center;
@@ -39,17 +39,16 @@ header {
   cursor: default;
 }
 
-/* Icono cruz al lado izquierdo del logo */
+/* Icono cruz médica */
 .logo::before {
-  content: "\271A"; /* Unicode para cruz médica (✚) */
+  content: "\271A";
   font-size: 1.8rem;
-  color: #d1e8ff; /* azul claro */
+  color: #d1e8ff;
   font-weight: bold;
-  /* animación sutil */
   animation: pulse 2.5s infinite;
 }
 
-/* Animación sutil para icono */
+/* Animación para el icono */
 @keyframes pulse {
   0%,
   100% {
@@ -60,14 +59,28 @@ header {
   }
 }
 
-/* Menú de navegación */
+/* Menú de navegación oculto por defecto */
 nav ul.menu {
+  display: none;
+  flex-direction: column;
+  background: #004aad;
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 1000;
   list-style: none;
-  display: flex;
   gap: 1.8rem;
   font-weight: 600;
 }
 
+/* Mostrar menú cuando tiene clase 'show' */
+nav ul.menu.show {
+  display: flex;
+}
+
+/* Enlaces del menú */
 nav ul.menu li a {
   color: #d1e8ff;
   text-decoration: none;
@@ -81,6 +94,26 @@ nav ul.menu li a:focus {
   background-color: #09376a;
   color: #fff;
   outline: none;
+}
+
+/* Botón cerrar sesión */
+nav ul.menu li a.cerrarSesion {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+nav ul.menu li a.cerrarSesion:hover {
+  background-color: #c0392b;
+}
+
+nav ul.menu li a.cerrarSesion:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5);
 }
 
 /* Main */
@@ -112,13 +145,39 @@ footer {
   background-color: #0a74da;
   color: white;
   text-align: center;
-  padding: 1rem 1rem;
+  padding: 1rem;
   font-size: 0.9rem;
   margin-top: auto;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.15);
 }
 
-/* Responsive para menú en pantallas pequeñas */
+/* Contenedor con imágenes a los lados */
+.contenido-flex {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.left-img,
+.right-img {
+  max-width: 350px;
+  width: 100%;
+  height: 600px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.left-img {
+  margin-left: 10px;
+}
+
+.right-img {
+  margin-right: 10px;
+}
+
+/* Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   nav ul.menu {
     flex-direction: column;
@@ -132,43 +191,4 @@ footer {
     margin: 2rem 1rem;
     padding: 1rem;
   }
-}
-nav ul.menu li a.cerrarSesion{
-  background-color: #e74c3c; /* Rojo */
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-nav ul.menu li a.cerrarSesion:hover {
-  background-color: #c0392b; /* Rojo oscuro */
-}
-nav ul.menu li a.cerrarSesion:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5); /* Sombra de enfoque */
-}
-.contenido-flex {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2rem;
-  margin: 2rem 0;
-}
-.left-img {
-  max-width: 350px;
-  width: 100%;
-  height: 600px;
-  border-radius: 8px;
-  margin-left: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-.right-img {
-  max-width: 350px;
-  width: 100%;
-  height: 600px;
-  border-radius: 8px;
-  margin-right: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
