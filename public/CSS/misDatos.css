@@ -1,0 +1,148 @@
+/* Estilo general para el cuerpo del documento */
+body {
+  font-family: Arial, sans-serif; /* Fuente legible y limpia */
+  margin: 0;
+  padding: 0;
+  background: #f2f2f2; /* Fondo gris claro */
+}
+
+/* Encabezado y pie de página con fondo azul y texto blanco */
+header,
+footer {
+  background-color: #007b9a; /* Azul fuerte */
+  color: white;
+  padding: 1rem; /* Espaciado interno */
+  text-align: center; /* Centra el texto */
+}
+
+/* Menú de navegación horizontal */
+.menu {
+  list-style: none; /* Quita los puntos de la lista */
+  display: flex; /* Elementos en línea */
+  justify-content: center; /* Centrado horizontal */
+  gap: 1rem; /* Separación entre elementos */
+  padding: 0;
+}
+
+/* Estilo de los enlaces dentro del menú */
+.menu li a {
+  color: white;
+  text-decoration: none; /* Quita subrayado */
+}
+
+/* Contenedor del perfil del usuario */
+.perfil {
+  background: white;
+  margin: 2rem auto;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Contenedor para el título "Mis Datos" */
+.titulo-contenedor {
+  background-color: #e0eaf5; /* Azul muy claro */
+  border: 2px solid #a0c4de; /* Borde azul intermedio */
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Título en azul fuerte */
+.titulo {
+  margin: 0;
+  color: #007b9a;
+}
+
+/* Campos de datos del usuario como Nombre, Usuario, etc. */
+.datosUsuario .campo {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f7f7f7; /* Gris claro */
+  box-shadow: 0 0 5px rgba(128, 128, 128, 0.3); /* Sombra gris */
+  border-radius: 6px;
+}
+
+/* Contenedor de botones con separación */
+.botones {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Botón "Modificar Datos" */
+.modificarBtn {
+  background-color: #007b9a; /* Azul fuerte */
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease; /* Animación suave al pasar el mouse */
+}
+
+/* Cambio de color al pasar el mouse */
+.modificarBtn:hover {
+  background-color: #00b7d1; /* Azul más brillante */
+}
+
+/* Etiquetas de formulario como "Email", "Teléfono", etc. */
+form label {
+  display: block;
+  margin-top: 1rem;
+}
+
+/* Campos de entrada de texto */
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc; /* Borde gris claro */
+  border-radius: 4px;
+}
+
+/* Botón "Guardar Cambios" */
+.guardar {
+  background-color: #007b9a;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Al pasar el mouse por "Guardar Cambios", se vuelve verde */
+.guardar:hover {
+  background-color: #28a745; /* Verde cálido */
+}
+
+/* Botón de tipo "button", usado para cancelar */
+button[type="button"] {
+  background-color: #888; /* Gris medio */
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Si querés que al pasar el mouse por cancelar cambie a rojo */
+button[type="button"]:hover {
+  background-color: #dc3545; /* Rojo */
+}
+
+/* Clase para ocultar elementos */
+.oculto {
+  display: none;
+}
+
+#mensajeResultado {
+  margin-top: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
