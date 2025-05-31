@@ -1,8 +1,16 @@
-//---------------------------------------
-//    Mostrar Datos del Usuario           1
-//---------------------------------------*/
+// public/JS/misDatos.js
+
+//------------------------------------------
+//   LOS DATOS DEL USUARIO                 |
+//------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("btnModificar").addEventListener("click", () => {
+    document.getElementById("formulario").classList.remove("oculto");
+    document.querySelector(".datos-usuario").classList.add("oculto");
+    document.getElementById("btnModificar").classList.add("oculto");
+  });
+
   try {
     const res = await fetch("/datos-paciente");
     if (!res.ok) throw new Error("Error al obtener los datos del usuario.");
@@ -14,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nombreCompleto = `${datos.nombre} ${datos.apellido}`;
     document.getElementById("nombreCompleto").textContent = nombreCompleto;
 
-    document.getElementById("usuario").textContent = datos.usuario; // Si no tenés usuario, mostrar email
+    document.getElementById("usuario").textContent = datos.nombre_usuario; // Si no tenés usuario, mostrar em
     document.getElementById("dni").textContent = datos.dni;
     document.getElementById("direccion").textContent = datos.direccion;
     document.getElementById("email").textContent = datos.email;
@@ -47,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 //----------------------------------------
-//    Actualizar Datos del Usuario         2
+//    Actualizar Datos del Usuario        |
 //----------------------------------------
 
 document
@@ -60,7 +68,7 @@ document
       telefono: form.telefono.value,
       direccion: form.direccion.value,
       obra_social: form.obra_social.value,
-      usuario: form.usuario.value,
+      nombre_usuario: form.usuario.value,
     };
 
     const mensajeError = document.getElementById("mensajeError");
@@ -96,3 +104,27 @@ document
       mensajeError.classList.remove("oculto");
     }
   });
+
+//----------------------------------------
+// CANCELAR EL FORMULARIO
+//----------------------------------------
+// Función global para cancelar el formulario
+function cancelarFormulario() {
+  const formulario = document.getElementById("formulario");
+  const mensajeError = document.getElementById("mensajeError");
+  const mensajeExito = document.getElementById("mensajeExito");
+
+  // Ocultar el formulario
+  formulario.classList.add("oculto");
+
+  // Mostrar los datos nuevamente
+  document.querySelector(".datos-usuario").classList.remove("oculto");
+  document.getElementById("btnModificar").classList.remove("oculto");
+
+  // Ocultar mensajes si estaban visibles
+  mensajeError.classList.add("oculto");
+  mensajeExito.classList.add("oculto");
+
+  // Reiniciar el formulario
+  formulario.reset();
+}

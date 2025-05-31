@@ -692,7 +692,7 @@ router.get("/datos-paciente", async (req, res) => {
     const idPaciente = req.session.user.id_persona; // Debe ser id_paciente
 
     const [datosPaciente] = await conexion.promise().query(
-      `SELECT 
+      `SELECT
          p.nombre,
          p.apellido,
          p.dni,
@@ -701,9 +701,11 @@ router.get("/datos-paciente", async (req, res) => {
          p.direccion,
          p.email,
          p.fecha_creacion,
-         pa.obra_social
+         pa.obra_social,
+          u.nombre_usuario
        FROM persona p
        JOIN paciente pa ON p.id_persona = pa.id_persona
+       LEFT JOIN usuario u ON p.id_persona = u.id_persona
        WHERE p.id_persona = ?`,
       [idPaciente]
     );
@@ -727,7 +729,6 @@ router.get("/datos-paciente", async (req, res) => {
       .json({ error: "Ocurrió un error al intentar obtener los datos." });
   }
 });
-module.exports = router;
 
 // -----------------------------------------------------------------
 //        ACTUALIZAR LOS DATOS DEL PACIENTE LOGUEADO
@@ -792,3 +793,5 @@ router.put("/actualizar-datos", async (req, res) => {
       .json({ error: "Error al actualizar los datos del paciente." });
   }
 });
+
+module.exports = router;
