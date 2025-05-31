@@ -602,9 +602,11 @@ router.post("/guardar-turno", async (req, res) => {
     const fechaComprobante = `${yyyy}${mm}${dd}`;
 
     // Consultar la cantidad de turnos generados hoy para crear el correlativo
-    const [turnosHoy] = await conexion.promise().query(
-      `SELECT COUNT(*) AS cantidad FROM turno WHERE DATE(fecha_creacion) = CURDATE()`
-    );
+    const [turnosHoy] = await conexion
+      .promise()
+      .query(
+        `SELECT COUNT(*) AS cantidad FROM turno WHERE DATE(fecha_creacion) = CURDATE()`
+      );
     const correlativo = String(turnosHoy[0].cantidad + 1).padStart(6, "0");
     const comprobante = `ST-${fechaComprobante}-${correlativo}`;
 
@@ -618,9 +620,9 @@ router.post("/guardar-turno", async (req, res) => {
     await conexion.promise().query(insertarTurno, [
       comprobante,
       idPacientePersonaTurno, // id_persona del paciente (adulto o menor)
-      idProfesional,          // id_persona del profesional
+      idProfesional, // id_persona del profesional
       fechaHoraTurno,
-      duracionTurno
+      duracionTurno,
     ]);
 
     console.log(
@@ -635,15 +637,16 @@ router.post("/guardar-turno", async (req, res) => {
       .json({ error: "Ocurrió un error al intentar registrar el turno." });
   }
 });
+
 //  -----------------------------------------------------------------
 //       OPTENER LOS TURNOS DEL PACIENTE LOGUEADO
 //------------------------------------------------------------------
 router.get("/turnos-paciente", async (req, res) => {
   if (!req.session.user) {
     console.error("[DEBUG] Usuario no autenticado al intentar obtener turnos");
-    return res.status(401).json({ error: "No autorizado" });// Verificar si el usuario está logueado
+    return res.status(401).json({ error: "No autorizado" }); // Verificar si el usuario está logueado
   }
-  
+
   try {
     const idPaciente = req.session.user.id_persona; // Debe ser id_paciente
 
@@ -662,24 +665,27 @@ router.get("/turnos-paciente", async (req, res) => {
        WHERE t.id_paciente = ?`,
       [idPaciente]
     );
-    
+
     console.log(
       `[DEBUG] Turnos obtenidos para paciente (id_persona) ${idPaciente}:`,
       turnos
     );
-    res.json({ success: true, data: turnos });// Devolver los turnos del paciente
+    res.json({ success: true, data: turnos }); // Devolver los turnos del paciente
   } catch (error) {
     console.error("[DEBUG] Error al obtener los turnos del paciente:", error);
-    res.status(500).json({ error: "Ocurrió un error al intentar obtener los turnos." });
+    res
+      .status(500)
+      .json({ error: "Ocurrió un error al intentar obtener los turnos." });
   }
 });
+
 // -----------------------------------------------------------------
 //        MOSTRAR LOS DATOS DEL PACIENTE LOGUEADO
 //------------------------------------------------------------------
 router.get("/datos-paciente", async (req, res) => {
   if (!req.session.user) {
     console.error("[DEBUG] Usuario no autenticado al intentar obtener datos");
-    return res.status(401).json({ error: "No autorizado" });// Verificar si el usuario está logueado
+    return res.status(401).json({ error: "No autorizado" }); // Verificar si el usuario está logueado
   }
 
   try {
@@ -704,26 +710,33 @@ router.get("/datos-paciente", async (req, res) => {
 
     if (datosPaciente.length === 0) {
       console.error("[DEBUG] No se encontraron datos del paciente");
-      return res.status(404).json({ error: "Datos del paciente no encontrados" });
+      return res
+        .status(404)
+        .json({ error: "Datos del paciente no encontrados" });
     }
 
     console.log(
       `[DEBUG] Datos obtenidos para paciente (id_persona) ${idPaciente}:`,
       datosPaciente[0]
     );
-    res.json({ success: true, data: datosPaciente[0] });// Devolver los datos del paciente
+    res.json({ success: true, data: datosPaciente[0] }); // Devolver los datos del paciente
   } catch (error) {
     console.error("[DEBUG] Error al obtener los datos del paciente:", error);
-    res.status(500).json({ error: "Ocurrió un error al intentar obtener los datos." });
+    res
+      .status(500)
+      .json({ error: "Ocurrió un error al intentar obtener los datos." });
   }
 });
 module.exports = router;
+
 // -----------------------------------------------------------------
 //        ACTUALIZAR LOS DATOS DEL PACIENTE LOGUEADO
 //------------------------------------------------------------------
 router.put("/actualizar-datos", async (req, res) => {
   if (!req.session.user) {
-    console.error("[DEBUG] Usuario no autenticado al intentar actualizar datos");
+    console.error(
+      "[DEBUG] Usuario no autenticado al intentar actualizar datos"
+    );
     return res.status(401).json({ error: "No autorizado" });
   }
 
@@ -741,34 +754,41 @@ router.put("/actualizar-datos", async (req, res) => {
     }
 
     // Actualizar tabla persona
-    await conexion.promise().query(
-      `UPDATE persona SET telefono = ?, direccion = ?, email = ? WHERE id_persona = ?`,
-      [telefono, direccion, email, idPersona]
-    );
+    await conexion
+      .promise()
+      .query(
+        `UPDATE persona SET telefono = ?, direccion = ?, email = ? WHERE id_persona = ?`,
+        [telefono, direccion, email, idPersona]
+      );
 
     // Actualizar obra social en paciente
-    await conexion.promise().query(
-      `UPDATE paciente SET obra_social = ? WHERE id_persona = ?`,
-      [obra_social || null, idPersona]
-    );
+    await conexion
+      .promise()
+      .query(`UPDATE paciente SET obra_social = ? WHERE id_persona = ?`, [
+        obra_social || null,
+        idPersona,
+      ]);
 
     // Actualizar usuario si corresponde
     if (nombre_usuario) {
-      await conexion.promise().query(
-        `UPDATE usuario SET nombre_usuario = ? WHERE id_persona = ?`,
-        [nombre_usuario, idPersona]
-      );
+      await conexion
+        .promise()
+        .query(`UPDATE usuario SET nombre_usuario = ? WHERE id_persona = ?`, [
+          nombre_usuario,
+          idPersona,
+        ]);
     }
     // Confirmar que los datos se han actualizado correctamente
     console.log(`[DEBUG] Datos actualizados para id_persona: ${idPersona}`);
     res.json({
       success: true,
       message: "Datos actualizados correctamente.",
-      data: { telefono, direccion, email, obra_social, nombre_usuario }
+      data: { telefono, direccion, email, obra_social, nombre_usuario },
     });
-
   } catch (error) {
     console.error("[DEBUG] Error al actualizar los datos:", error);
-    res.status(500).json({ error: "Error al actualizar los datos del paciente." });
+    res
+      .status(500)
+      .json({ error: "Error al actualizar los datos del paciente." });
   }
 });
