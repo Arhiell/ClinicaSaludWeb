@@ -168,7 +168,7 @@ footer {
 }
 
 .left-img,
-.right-img {
+.right-img {  /* Contenedor de imágenes a los lados */
   max-width: 350px;
   width: 100%;
   height: 600px;
@@ -185,7 +185,7 @@ footer {
 }
 
 /* Responsive para pantallas pequeñas */
-@media (max-width: 768px) {
+@media (max-width: 859px) {
   nav ul.menu {
     display: none; /* Solo se oculta en móviles */
     flex-direction: column;

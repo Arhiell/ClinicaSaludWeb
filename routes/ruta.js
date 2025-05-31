@@ -702,7 +702,7 @@ router.get("/datos-paciente", async (req, res) => {
          p.email,
          p.fecha_creacion,
          pa.obra_social,
-          u.nombre_usuario
+         u.nombre_usuario
        FROM persona p
        JOIN paciente pa ON p.id_persona = pa.id_persona
        LEFT JOIN usuario u ON p.id_persona = u.id_persona
