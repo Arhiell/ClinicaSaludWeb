@@ -92,7 +92,7 @@ CREATE TABLE especialidad (
     FOREIGN KEY (id_estado) REFERENCES estado(id_estado)
 );
 INSERT INTO especialidad (nombre, descripcion, id_estado) VALUES
-('Clínica General', 'Atención médica general para adultos.', 1),
+('Clínico General', 'Atención médica general para adultos.', 1),
 ('Pediatría', 'Atención médica para niños y adolescentes.', 1),
 ('Cardiología', 'Diagnóstico y tratamiento de enfermedades del corazón.', 1),
 ('Ginecología', 'Atención de salud femenina y control ginecológico.', 1);
@@ -113,25 +113,40 @@ CREATE TABLE persona (
     edad INT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    
     ultima_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,    
-
     FOREIGN KEY (id_rol) REFERENCES rol(id_rol),    
     FOREIGN KEY (id_especialidad) REFERENCES especialidad(id_especialidad),
     FOREIGN KEY (id_estado) REFERENCES estado(id_estado)
 );
 
-INSERT INTO persona (
-    dni, nombre, apellido, email, telefono, direccion, 
-    id_rol, id_especialidad, id_estado, fecha_nacimiento
-)
-VALUES
-('30123456', 'Lucía', 'Gómez', 'lucia.gomez@mail.com', '3624123456', 'Av. 9 de Julio 123', 4, NULL, 1, '1990-05-14'),
-('28999111', 'Carlos', 'Pérez', 'carlos.perez@mail.com', '3624001122', 'Calle Falsa 456', 4, NULL, 1, '1985-08-22'),
-('31455678', 'Valeria', 'López', 'valeria.lopez@mail.com', '3624113344', 'Mitre 789', 2, NULL, 1, '1992-03-30'),
-('27654321', 'Miguel', 'Fernández', 'miguel.fernandez@mail.com', '3624332211', 'Belgrano 150', 3, 1, 1, '1980-12-05'),
-('30887766', 'Paula', 'Martínez', 'paula.martinez@mail.com', '3624556677', 'Urquiza 1020', 3, 2, 1, '1995-07-19'),
-('29550123', 'Diego', 'Ramírez', 'diego.ramirez@mail.com', '3624998877', 'España 99', 3, 4, 1, '1998-01-11'),
-('49111222', 'Tomás', 'Pérez', 'tomas.perez@example.com', '1133445566', 'Av. Siempre Viva 742', 4, NULL, 1, '2012-08-20'),
-('30222333', 'Laura', 'González', 'laura.tutor@example.com', '1144556677', 'Calle Falsa 123', NULL, NULL, 1, '1980-05-15');
+INSERT INTO persona ( dni, nombre, apellido, email, telefono, direccion, 
+    id_rol, id_especialidad, id_estado, fecha_nacimiento, edad
+) VALUES
+-- 1. ADMINISTRADOR
+('28999111', 'Carlos', 'Pérez', 'carlos.perez@mail.com', '3624001122', 'Calle Falsa 456', 1, NULL, 1, '1985-08-22', 39),
+-- 2. SECRETARIAS
+('31455678', 'Valeria', 'López', 'valeria.lopez@mail.com', '3624113344', 'Mitre 789', 2, NULL, 1, '1992-03-30', 33),
+-- 3. ESPECIALISTAS
+-- Especialistas iniciales
+('27654321', 'Miguel', 'Fernández', 'miguel.fernandez@mail.com', '3624332211', 'Belgrano 150', 3, 1, 1, '1980-12-05', 44),
+('30887766', 'Paula', 'Martínez', 'paula.martinez@mail.com', '3624556677', 'Urquiza 1020', 3, 2, 1, '1995-07-19', 30),
+('29550123', 'Diego', 'Ramírez', 'diego.ramirez@mail.com', '3624998877', 'España 99', 3, 4, 1, '1998-01-11', 28),
+-- 8 especialistas adicionales
+('11111111', 'Carlos', 'Gómez', 'carlos.gomez@clinica.com', '1234567890', 'Calle 1', 3, 1, 1, '1980-01-01', 45),
+('22222222', 'Laura', 'Martínez', 'laura.martinez@clinica.com', '1234567891', 'Calle 2', 3, 1, 1, '1975-05-10', 50),
+('33333333', 'Luis', 'Pérez', 'luis.perez@clinica.com', '1234567892', 'Calle 3', 3, 2, 1, '1982-02-02', 43),
+('44444444', 'Ana', 'Rivas', 'ana.rivas@clinica.com', '1234567893', 'Calle 4', 3, 2, 1, '1985-03-03', 40),
+('55555555', 'José', 'Fernández', 'jose.fernandez@clinica.com', '1234567894', 'Calle 5', 3, 3, 1, '1970-04-04', 55),
+('66666666', 'Marta', 'López', 'marta.lopez@clinica.com', '1234567895', 'Calle 6', 3, 3, 1, '1988-05-05', 37),
+('77777777', 'Diego', 'Sosa', 'diego.sosa@clinica.com', '1234567896', 'Calle 7', 3, 4, 1, '1981-06-06', 44),
+('88888888', 'Lucía', 'García', 'lucia.garcia@clinica.com', '1234567897', 'Calle 8', 3, 4, 1, '1978-07-07', 47),
+-- 4. PACIENTES
+('49111222', 'Tomás', 'Pérez', 'tomas.perez@example.com', '1133445566', 'Av. Siempre Viva 742', 4, NULL, 1, '2012-08-20', 13),
+('99900001', 'Pedro', 'Ramírez', 'pedro.ramirez@mail.com', '3410000001', 'Calle 10', 4, NULL, 1, '2000-01-01', 25),
+('99900002', 'Julieta', 'Suárez', 'julieta.suarez@mail.com', '3410000002', 'Calle 11', 4, NULL, 1, '1998-02-02', 27),
+('99900003', 'Martín', 'Bravo', 'martin.bravo@mail.com', '3410000003', 'Calle 12', 4, NULL, 1, '2002-03-03', 23),
+('99900004', 'Soledad', 'Mendoza', 'soledad.mendoza@mail.com', '3410000004', 'Calle 13', 4, NULL, 1, '1995-04-04', 30),
+('99900005', 'Gustavo', 'Ibáñez', 'gustavo.ibanez@mail.com', '3410000005', 'Calle 14', 4, NULL, 1, '2001-05-05', 24),
+('99900006', 'Florencia', 'Bianchi', 'florencia.bianchi@mail.com', '3410000006', 'Calle 15', 4, NULL, 1, '1999-06-06', 26);
 
 -- Tabla tutor
 CREATE TABLE tutor (
@@ -156,9 +171,14 @@ CREATE TABLE paciente (
 );
 INSERT INTO paciente (id_persona, obra_social, id_estado)
 VALUES
-(1, 'Osde', 1),
-(2, 'Swiss Medical', 1),
-(7, 'OSDE', 1);
+(14, 'Osde', 1),
+(15, 'Osde', 1),
+(16, 'Osde', 1),
+(17, 'Swiss Medical', 1), 
+(18, 'Swiss Medical', 1), 
+(19, 'Osde', 1), 
+(20, 'Swiss Medical', 1);
+
 
 -- Tabla paciente_tutor
 CREATE TABLE paciente_tutor (
@@ -186,8 +206,15 @@ INSERT INTO profesional (id_persona, id_especialidad, matricula_profesional, id_
 VALUES
 (4, 2, 'M12345', 1),
 (5, 3, 'M67890', 1),
-(6, 4, 'M8394', 1)
-;
+(6, 4, 'M8394', 1),
+(7, 1, 'M11111', 1),  
+(8, 1, 'M22222', 1),  
+(9, 2, 'M33333', 1),  
+(10, 2, 'M44444', 1), 
+(11, 3, 'M55555', 1), 
+(12, 3, 'M66666', 1), 
+(13, 4, 'M77777', 1),
+(14, 4, 'M88888', 1); 
 
 -- Tabla usuario
 CREATE TABLE usuario (
@@ -204,7 +231,26 @@ VALUES
 ('admin', 'admin123', 1, 1), 
 ('secretaria1', 'secretaria123', 2, 1),
 ('especialista1', 'especialista123', 3, 1),
-('paciente1', 'paciente123', 5, 1);
+('paciente1', 'paciente123', 5, 1),
+-- especialistas
+('cardio1', '1234', 1, 1),
+('cardio2', '1234', 2, 1),
+('pedia1', '1234', 3, 1),
+('pedia2', '1234', 4, 1),
+('clinico1', '1234', 5, 1),
+('clinico2', '1234', 6, 1),
+('gine1', '1234', 7, 1),
+('gine2', '1234', 8, 1),
+-- pacientes
+('tomasperez', '123', 14, 1),
+('pedroramirez', '123', 15, 1),
+('julietasuarez', '123', 16, 1),
+('martinbravo', '123', 17, 1),
+('soledadmendoza', '123', 18, 1),
+('gustavoibanez', '123', 19, 1),
+('florenciabianchi', '123', 20, 1);
+
+
 
 -- Tabla horario_disponible
 CREATE TABLE horario_disponible (    
@@ -224,7 +270,53 @@ VALUES
 (3, 'Miércoles', '09:00:00', '12:00:00', 1),
 (3, 'Jueves', '14:00:00', '18:00:00', 1),
 (3, 'Viernes', '09:00:00', '12:00:00', 1),
-(4, 'Lunes', '09:00:00', '12:00:00', 1);
+(4, 'Lunes', '09:00:00', '12:00:00', 1),
+-- Cardiólogos
+(1, 'Lunes', '09:00:00', '12:00:00', 1),
+(1, 'Miércoles', '09:00:00', '12:00:00', 1),
+(2, 'Martes', '09:00:00', '12:00:00', 1),
+(2, 'Jueves', '09:00:00', '12:00:00', 1),
+-- Pediatras
+(3, 'Lunes', '09:00:00', '12:00:00', 1),
+(3, 'Jueves', '09:00:00', '12:00:00', 1),
+(4, 'Martes', '09:00:00', '12:00:00', 1),
+(4, 'Viernes', '09:00:00', '12:00:00', 1),
+-- Clínicos
+(5, 'Miércoles', '09:00:00', '12:00:00', 1),
+(5, 'Viernes', '09:00:00', '12:00:00', 1),
+(6, 'Lunes', '09:00:00', '12:00:00', 1),
+(6, 'Martes', '09:00:00', '12:00:00', 1),
+-- Ginecólogos
+(7, 'Miércoles', '09:00:00', '12:00:00', 1),
+(7, 'Jueves', '09:00:00', '12:00:00', 1),
+(8, 'Lunes', '09:00:00', '12:00:00', 1),
+(8, 'Viernes', '09:00:00', '12:00:00', 1),
+-- Carlos Gómez 
+(7, 'Lunes', '14:00:00', '18:00:00', 1),
+(7, 'Miércoles', '14:00:00', '18:00:00', 1),
+-- Laura Martínez
+(8, 'Martes', '14:00:00', '18:00:00', 1),
+(8, 'Jueves', '14:00:00', '18:00:00', 1),
+-- Luis Pérez 
+(9, 'Lunes', '14:00:00', '18:00:00', 1),
+(9, 'Jueves', '14:00:00', '18:00:00', 1),
+-- Ana Rivas 
+(10, 'Martes', '14:00:00', '18:00:00', 1),
+(10, 'Viernes', '14:00:00', '18:00:00', 1),
+-- José Fernández 
+(11, 'Miércoles', '14:00:00', '18:00:00', 1),
+(11, 'Viernes', '14:00:00', '18:00:00', 1),
+-- Marta López 
+(12, 'Lunes', '14:00:00', '18:00:00', 1),
+(12, 'Martes', '14:00:00', '18:00:00', 1),
+-- Diego Sosa 
+(13, 'Miércoles', '14:00:00', '18:00:00', 1),
+(13, 'Jueves', '14:00:00', '18:00:00', 1),
+-- Lucía García 
+(14, 'Lunes', '14:00:00', '18:00:00', 1),
+(14, 'Viernes', '14:00:00', '18:00:00', 1);
+
+
 
 -- Tabla turno
 CREATE TABLE turno (    
@@ -282,6 +374,7 @@ VALUES
 (4, '2025-05-13', 500.00, 1), 
 (5, '2025-05-14', 600.00, 3), 
 (6, '2025-05-15', 500.00, 1);
+
 
 -- Tabla consulta_web
 CREATE TABLE consulta_web (
