@@ -18,9 +18,7 @@
           <li><a href="../HTML/misTurno.html">Mis Turnos</a></li>
           <li><a href="../HTML/misDatos.html">Mis Datos</a></li>
           <li>
-            <a class="cerrarSesion" href="#" onclick="cerrarSesion()"
-              >Cerrar Sesión</a
-            >
+            <a class="cerrarSesion" href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
           </li>
         </ul>
       </nav>
@@ -31,50 +29,35 @@
         <h1 class="titulo">Mis Datos</h1>
       </div>
 
-      <div class="datosUsuario">
-        <div class="campo sombreado"><strong>Usuario:</strong> usuario123</div>
-        <div class="campo sombreado">
-          <strong>Nombre completo:</strong> Juan Pérez
-        </div>
-      </div>
+      <dl class="datos-usuario sombreado">
+        <div><dt>Usuario:</dt><dd id="usuario"></dd></div>
+        <div><dt>Nombre completo:</dt><dd id="nombreCompleto"></dd></div>
+        <div><dt>DNI:</dt><dd id="dni"></dd></div>
+        <div><dt>Fecha de nacimiento:</dt><dd id="fechaNacimiento"></dd></div>
+        <div><dt>Teléfono:</dt><dd id="telefono"></dd></div>
+        <div><dt>Dirección:</dt><dd id="direccion"></dd></div>
+        <div><dt>Email:</dt><dd id="email"></dd></div>
+        <div><dt>Fecha de registro:</dt><dd id="fechaRegistro"></dd></div>
+        <div><dt>Obra social:</dt><dd id="obraSocial"></dd></div>
+      </dl>
 
       <div class="botones">
         <button id="btnModificar">Modificar</button>
       </div>
 
       <form id="formulario" class="oculto">
-        <label
-          >Email
-          <input type="email" name="email" required />
-        </label>
-        <label
-          >Teléfono
-          <input type="tel" name="telefono" required />
-        </label>
-        <label
-          >Dirección
-          <input type="text" name="direccion" required />
-        </label>
-        <label
-          >Nombre de usuario
-          <input type="text" name="usuario" required />
-        </label>
-        <label
-          >Contraseña anterior
-          <input type="password" name="passwordAnterior" required />
-        </label>
-        <label
-          >Nueva contraseña
-          <input type="password" name="nuevaPassword" required />
-        </label>
+        <label>Email <input type="email" name="email" required /></label>
+        <label>Teléfono <input type="tel" name="telefono" required /></label>
+        <label>Dirección <input type="text" name="direccion" required /></label>
+        <label>Obra social <input type="text" name="obra_social" required /></label>
+        <label>Nombre de usuario <input type="text" name="usuario" required /></label>
 
         <div class="botones">
           <button type="submit" class="guardar">Guardar Cambios</button>
-          <button type="button" class="cancelar" onclick="cancelarFormulario()">
-            Cancelar
-          </button>
+          <button type="button" class="cancelar" onclick="cancelarFormulario()">Cancelar</button>
         </div>
-        <div id="mensaje" class="mensaje"></div>
+        <div id="mensajeError" class="oculto mensajeError"></div>
+        <div id="mensajeExito" class="oculto mensajeExito"></div>
       </form>
     </main>
 
@@ -85,5 +68,89 @@
 
     <script src="../JS/misDatos.js"></script>
     <script src="../JS/menuDesple.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("/datos-paciente");
+    if (!res.ok) throw new Error("Error al obtener los datos del usuario.");
+
+    const resultado = await res.json();
+    const datos = resultado.data;
+
+    // Agregamos nombre completo
+    const nombreCompleto = `${datos.nombre} ${datos.apellido}`;
+    document.getElementById("nombreCompleto").textContent = nombreCompleto;
+
+    document.getElementById("usuario").textContent = datos.usuario || datos.email; // Si no tenés usuario, mostrar email
+    document.getElementById("dni").textContent = datos.dni;
+    document.getElementById("direccion").textContent = datos.direccion;
+    document.getElementById("email").textContent = datos.email;
+    document.getElementById("obraSocial").textContent = datos.obra_social || "Sin obra social";
+    document.getElementById("telefono").textContent = datos.telefono || "No especificado";
+    const fechaNacimiento = new Date(datos.fecha_nacimiento);
+    document.getElementById("fechaNacimiento").textContent = isNaN(fechaNacimiento.getTime())
+      ? "Fecha inválida"
+      : fechaNacimiento.toLocaleDateString("es-AR");
+
+    const fechaCreacion = new Date(datos.fecha_creacion);
+    document.getElementById("fechaRegistro").textContent = isNaN(fechaCreacion.getTime())
+      ? "Fecha no válida"
+      : fechaCreacion.toLocaleDateString("es-AR");
+
+  } catch (error) {
+    console.error("Fallo al cargar datos del paciente:", error);
+    const mensaje = document.getElementById("mensajeError");
+    if (mensaje) {
+      mensaje.textContent = "No se pudieron cargar tus datos. Por favor, intenta más tarde.";
+      mensaje.classList.remove("oculto");
+    }
+  }
+});
+    </script>
+    <script>
+      document.getElementById("formulario").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const datos = {
+          email: form.email.value,
+          telefono: form.telefono.value,
+          direccion: form.direccion.value,
+          obra_social: form.obra_social.value,
+          usuario: form.usuario.value,
+        };
+
+        const mensajeError = document.getElementById("mensajeError");
+        const mensajeExito = document.getElementById("mensajeExito");
+        mensajeError.classList.add("oculto");
+        mensajeExito.classList.add("oculto");
+
+        try {
+          const res = await fetch("/actualizar-datos", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+          });
+
+          const resultado = await res.json();
+
+          if (!res.ok) {
+            mensajeError.textContent = resultado.error || "Error al actualizar los datos.";
+            mensajeError.classList.remove("oculto");
+          } else {
+            mensajeExito.textContent = "Datos actualizados correctamente.";
+            mensajeExito.classList.remove("oculto");
+            form.reset();
+            form.classList.add("oculto");
+            document.querySelector(".datos-usuario").classList.remove("oculto");
+            document.getElementById("btnModificar").classList.remove("oculto");
+            // Opcional: recargar los datos del usuario
+            location.reload();
+          }
+        } catch (err) {
+          mensajeError.textContent = "No se pudo actualizar. Intenta más tarde.";
+          mensajeError.classList.remove("oculto");
+        }
+      });
+    </script>
   </body>
 </html>

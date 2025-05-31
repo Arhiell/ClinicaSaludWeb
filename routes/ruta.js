@@ -674,7 +674,101 @@ router.get("/turnos-paciente", async (req, res) => {
   }
 });
 // -----------------------------------------------------------------
-//        MOSTRAR LOS DATOS DEL PACIENTE LOGUEADO Y MODIFICARLOS
+//        MOSTRAR LOS DATOS DEL PACIENTE LOGUEADO
 //------------------------------------------------------------------
+router.get("/datos-paciente", async (req, res) => {
+  if (!req.session.user) {
+    console.error("[DEBUG] Usuario no autenticado al intentar obtener datos");
+    return res.status(401).json({ error: "No autorizado" });// Verificar si el usuario está logueado
+  }
 
+  try {
+    const idPaciente = req.session.user.id_persona; // Debe ser id_paciente
+
+    const [datosPaciente] = await conexion.promise().query(
+      `SELECT 
+         p.nombre,
+         p.apellido,
+         p.dni,
+         p.fecha_nacimiento,
+         p.telefono,
+         p.direccion,
+         p.email,
+         p.fecha_creacion,
+         pa.obra_social
+       FROM persona p
+       JOIN paciente pa ON p.id_persona = pa.id_persona
+       WHERE p.id_persona = ?`,
+      [idPaciente]
+    );
+
+    if (datosPaciente.length === 0) {
+      console.error("[DEBUG] No se encontraron datos del paciente");
+      return res.status(404).json({ error: "Datos del paciente no encontrados" });
+    }
+
+    console.log(
+      `[DEBUG] Datos obtenidos para paciente (id_persona) ${idPaciente}:`,
+      datosPaciente[0]
+    );
+    res.json({ success: true, data: datosPaciente[0] });// Devolver los datos del paciente
+  } catch (error) {
+    console.error("[DEBUG] Error al obtener los datos del paciente:", error);
+    res.status(500).json({ error: "Ocurrió un error al intentar obtener los datos." });
+  }
+});
 module.exports = router;
+// -----------------------------------------------------------------
+//        ACTUALIZAR LOS DATOS DEL PACIENTE LOGUEADO
+//------------------------------------------------------------------
+router.put("/actualizar-datos", async (req, res) => {
+  if (!req.session.user) {
+    console.error("[DEBUG] Usuario no autenticado al intentar actualizar datos");
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  const idPersona = req.session.user.id_persona; // Debe ser id_persona del paciente logueado
+  const { telefono, direccion, email, obra_social, nombre_usuario } = req.body;
+
+  if (!telefono || !direccion || !email) {
+    return res.status(400).json({ error: "Faltan datos obligatorios." });
+  } // Validar que al menos uno de los campos opcionales esté presente
+
+  try {
+    // Validación simple de email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: "Email no válido." });
+    }
+
+    // Actualizar tabla persona
+    await conexion.promise().query(
+      `UPDATE persona SET telefono = ?, direccion = ?, email = ? WHERE id_persona = ?`,
+      [telefono, direccion, email, idPersona]
+    );
+
+    // Actualizar obra social en paciente
+    await conexion.promise().query(
+      `UPDATE paciente SET obra_social = ? WHERE id_persona = ?`,
+      [obra_social || null, idPersona]
+    );
+
+    // Actualizar usuario si corresponde
+    if (nombre_usuario) {
+      await conexion.promise().query(
+        `UPDATE usuario SET nombre_usuario = ? WHERE id_persona = ?`,
+        [nombre_usuario, idPersona]
+      );
+    }
+    // Confirmar que los datos se han actualizado correctamente
+    console.log(`[DEBUG] Datos actualizados para id_persona: ${idPersona}`);
+    res.json({
+      success: true,
+      message: "Datos actualizados correctamente.",
+      data: { telefono, direccion, email, obra_social, nombre_usuario }
+    });
+
+  } catch (error) {
+    console.error("[DEBUG] Error al actualizar los datos:", error);
+    res.status(500).json({ error: "Error al actualizar los datos del paciente." });
+  }
+});

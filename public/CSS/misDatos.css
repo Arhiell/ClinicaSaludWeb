@@ -1,45 +1,3 @@
-/* Estilo general para el cuerpo del documento */
-body {
-  font-family: Arial, sans-serif; /* Fuente legible y limpia */
-  margin: 0;
-  padding: 0;
-  background: #f2f2f2; /* Fondo gris claro */
-}
-
-/* Encabezado y pie de página con fondo azul y texto blanco */
-header,
-footer {
-  background-color: #007b9a; /* Azul fuerte */
-  color: white;
-  padding: 1rem; /* Espaciado interno */
-  text-align: center; /* Centra el texto */
-}
-
-/* Menú de navegación horizontal */
-.menu {
-  list-style: none; /* Quita los puntos de la lista */
-  display: flex; /* Elementos en línea */
-  justify-content: center; /* Centrado horizontal */
-  gap: 1rem; /* Separación entre elementos */
-  padding: 0;
-}
-
-/* Estilo de los enlaces dentro del menú */
-.menu li a {
-  color: white;
-  text-decoration: none; /* Quita subrayado */
-}
-
-/* Contenedor del perfil del usuario */
-.perfil {
-  background: white;
-  margin: 2rem auto;
-  padding: 2rem;
-  width: 90%;
-  max-width: 600px;
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
-}
 
 /* Contenedor para el título "Mis Datos" */
 .titulo-contenedor {
@@ -107,7 +65,7 @@ input {
 
 /* Botón "Guardar Cambios" */
 .guardar {
-  background-color: #007b9a;
+  background-color: #0499be;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -141,8 +99,16 @@ button[type="button"]:hover {
   display: none;
 }
 
-#mensajeResultado {
-  margin-top: 1rem;
-  font-weight: bold;
+.mensajeError {
+  color: #dc3545; /* Rojo */
+    font-size: 0.9rem;
   text-align: center;
+  margin-top: 5px;
+}
+
+.mensajeExito {
+  color: #28a745; /* Verde */
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 5px;
 }
