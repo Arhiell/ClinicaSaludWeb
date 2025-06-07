@@ -12,3 +12,17 @@ function cerrarSesion() {
   // Redirigís al login
   window.location.href = "../login.html";
 }
+  // Obtener la URL actual
+  const currentUrl = window.location.href;
+
+  // Seleccionar todos los enlaces del menú
+  const menuLinks = document.querySelectorAll('nav .menu a');
+
+  menuLinks.forEach(link => {
+    // Verifica si el href del enlace está contenido en la URL actual
+    if (currentUrl.includes(link.getAttribute('href'))) {
+      link.classList.add('activo');
+    }
+  });
+
+

@@ -276,3 +276,14 @@ nav ul.menu li a.cerrarSesion:focus {
 .oculto {
   display: none;
 }
+.menu a.activo {
+  background-color: #007bff; /* Azul de ejemplo */
+  color: white;
+  font-weight: bold;
+}
+
+.menu a:hover,
+.menu a:focus {
+  background-color: #0056b3; /* Hover diferente si deseas */
+  color: white;
+}
