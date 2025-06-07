@@ -133,7 +133,7 @@
           if (res.ok && json.redirect) {
             successMsg.textContent = "¡Registro exitoso! Redirigiendo...";
             setTimeout(() => {
-              window.location.href = json.redirect;
+              mostrarLogin(); // Cambia al formulario de login
             }, 2000); // Espera 2 segundos antes de redirigir
           } else {
             errorMsg.textContent = json.error || "Error en el registro.";
