@@ -27,7 +27,6 @@ Permite la gestión integral de turnos médicos con roles diferenciados, ofrecie
 -  🐬 Base de datos
     - 🗄️ **MySQL.**
     - 🧰 **SGBD**: MySQL Workbench.
-    - 
 ---
 ## 🚀 **¿Cómo ejecutar el proyecto?**
 
