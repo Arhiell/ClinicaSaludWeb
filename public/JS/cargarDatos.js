@@ -105,7 +105,7 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
 
   const idProfesional = document.getElementById("doctor").value;
   const fecha = document.getElementById("fecha").value;
-  const hora = document.getElementById("hora").value; // Ahora solo contendrá la hora de inicio
+  const hora = document.getElementById("hora").value;
 
   const esMenor = document.getElementById("turnoMenor").checked;
 
@@ -123,7 +123,6 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
       dni: document.getElementById("dniMenor").value,
       fechaNacimiento: document.getElementById("fechaNacimientoMenor").value,
       relacion: document.getElementById("relacion").value,
-      // Asegúrate de incluir obraSocialMenor si es necesario para el registro del menor
       obraSocial: document.getElementById("obraSocialMenor")?.value || null,
     };
   }
@@ -154,16 +153,32 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log("Respuesta del servidor:", data); // Depuración
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeExito = document.getElementById("mensajeExito");
+
       if (data.success) {
-        alert("Turno registrado con éxito");
+        mensajeExito.textContent = "Turno registrado con éxito.";
+        mensajeExito.style.display = "block";
+        mensajeError.style.display = "none";
+
+        // Resetear el formulario y ocultar la sección del menor
         document.getElementById("formTurno").reset();
         document.getElementById("seccionMenor").style.display = "none";
       } else {
-        alert("Error al registrar turno: " + data.error);
+        mensajeError.textContent = "Error al registrar turno: " + data.error;
+        mensajeError.style.display = "block";
+        mensajeExito.style.display = "none";
       }
     })
     .catch((err) => {
       console.error("Error al guardar el turno:", err);
-      alert("Ocurrió un error al intentar registrar el turno.");
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeExito = document.getElementById("mensajeExito");
+
+      mensajeError.textContent =
+        "Ocurrió un error al intentar registrar el turno.";
+      mensajeError.style.display = "block";
+      mensajeExito.style.display = "none";
     });
 });

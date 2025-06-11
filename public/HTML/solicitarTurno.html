@@ -14,7 +14,11 @@
       <nav>
         <ul class="menu">
           <li><a href="../HTML/inicio.html">Inicio</a></li>
-          <li><a href="../HTML/solicitarTurno.html" class="activo">Solicitar Turno</a></li>
+          <li>
+            <a href="../HTML/solicitarTurno.html" class="activo"
+              >Solicitar Turno</a
+            >
+          </li>
           <li><a href="../HTML/misTurno.html">Mis Turnos</a></li>
           <li><a href="../HTML/misDatos.html">Mis Datos</a></li>
           <li>
@@ -83,6 +87,10 @@
           </div>
 
           <button type="submit" id="confirmarTurno">Solicitar Turno</button>
+
+          <!-- Mensajes de éxito y error -->
+          <div id="mensajeError" style="color: red; display: none"></div>
+          <div id="mensajeExito" style="color: green; display: none"></div>
         </form>
       </div>
     </main>
