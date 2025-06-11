@@ -641,14 +641,15 @@ router.post("/guardar-turno", async (req, res) => {
 //  -----------------------------------------------------------------
 //       OPTENER LOS TURNOS DEL PACIENTE LOGUEADO
 //------------------------------------------------------------------
+
 router.get("/turnos-paciente", async (req, res) => {
   if (!req.session.user) {
     console.error("[DEBUG] Usuario no autenticado al intentar obtener turnos");
-    return res.status(401).json({ error: "No autorizado" }); // Verificar si el usuario está logueado
+    return res.status(401).json({ error: "No autorizado" });
   }
 
   try {
-    const idPaciente = req.session.user.id_persona; // Debe ser id_paciente
+    const idPaciente = req.session.user.id_persona;
 
     const [turnos] = await conexion.promise().query(
       `SELECT 
@@ -666,13 +667,49 @@ router.get("/turnos-paciente", async (req, res) => {
       [idPaciente]
     );
 
-    console.log(
-      `[DEBUG] Turnos obtenidos para paciente (id_persona) ${idPaciente}:`,
-      turnos
+    console.log("[DEBUG] Turnos propios:", turnos);
+    // Obtener id_tutor del usuario logueado
+    const idUsuarioLogueado = req.session.user.id_usuario;
+    const [rowsTutor] = await conexion.promise().query(
+      `SELECT t.id_tutor
+       FROM tutor t
+       JOIN persona p ON t.id_persona = p.id_persona
+       JOIN usuario u ON u.id_persona = p.id_persona
+       WHERE u.id_usuario = ?`,
+      [idUsuarioLogueado]
     );
-    res.json({ success: true, data: turnos }); // Devolver los turnos del paciente
+
+    const idTutor = rowsTutor[0]?.id_tutor;
+
+    // Obtener turnos de menores asociados al tutor
+    const [turnosMenores] = await conexion.promise().query(
+      `SELECT 
+         CONCAT(p.nombre, ' ', p.apellido) AS nombre,
+         t.comprobante,
+         t.fecha_hora,
+         CONCAT(p_medico.nombre, ' ', p_medico.apellido) AS medico,
+         e.nombre AS especialidad,
+         es.nombre AS estado
+       FROM paciente_tutor pt
+       JOIN paciente pa ON pt.id_paciente = pa.id_paciente
+       JOIN persona p ON pa.id_persona = p.id_persona
+       JOIN turno t ON t.id_paciente = pa.id_persona
+       JOIN persona p_medico ON t.id_profesional = p_medico.id_persona
+       JOIN profesional prof ON prof.id_persona = p_medico.id_persona
+       JOIN especialidad e ON prof.id_especialidad = e.id_especialidad
+       JOIN estado es ON t.id_estado = es.id_estado
+       WHERE pt.id_tutor = ?`,
+      [idTutor]
+    );
+
+    console.log("[DEBUG] Resultados de turnos de menores:");
+    turnosMenores.forEach((turno, index) => {
+      console.log(`[DEBUG] Turno ${index + 1}:`, turno);
+    });
+
+    res.json({ success: true, data: turnos, menores: turnosMenores });
   } catch (error) {
-    console.error("[DEBUG] Error al obtener los turnos del paciente:", error);
+    console.error("[DEBUG] Error al obtener los turnos:", error);
     res
       .status(500)
       .json({ error: "Ocurrió un error al intentar obtener los turnos." });
