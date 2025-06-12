@@ -649,6 +649,8 @@ router.get("/turnos-paciente", async (req, res) => {
   }
 
   try {
+    const verTodos = req.query.todos === "true";
+    const limite = verTodos ? "" : "LIMIT 3"; // solo 3 si no pidió todos
     const idPaciente = req.session.user.id_persona;
 
     const [turnos] = await conexion.promise().query(
@@ -663,12 +665,12 @@ router.get("/turnos-paciente", async (req, res) => {
        JOIN profesional prof ON prof.id_persona = p_medico.id_persona
        JOIN especialidad e ON prof.id_especialidad = e.id_especialidad
        JOIN estado es ON t.id_estado = es.id_estado
-       WHERE t.id_paciente = ?`,
+       WHERE t.id_paciente = ?
+       ORDER BY t.fecha_hora DESC
+       ${limite}`,
       [idPaciente]
     );
 
-    console.log("[DEBUG] Turnos propios:", turnos);
-    // Obtener id_tutor del usuario logueado
     const idUsuarioLogueado = req.session.user.id_usuario;
     const [rowsTutor] = await conexion.promise().query(
       `SELECT t.id_tutor
@@ -681,7 +683,6 @@ router.get("/turnos-paciente", async (req, res) => {
 
     const idTutor = rowsTutor[0]?.id_tutor;
 
-    // Obtener turnos de menores asociados al tutor
     const [turnosMenores] = await conexion.promise().query(
       `SELECT 
          CONCAT(p.nombre, ' ', p.apellido) AS nombre,
@@ -698,14 +699,11 @@ router.get("/turnos-paciente", async (req, res) => {
        JOIN profesional prof ON prof.id_persona = p_medico.id_persona
        JOIN especialidad e ON prof.id_especialidad = e.id_especialidad
        JOIN estado es ON t.id_estado = es.id_estado
-       WHERE pt.id_tutor = ?`,
+       WHERE pt.id_tutor = ?
+       ORDER BY t.fecha_hora DESC
+       ${limite}`,
       [idTutor]
     );
-
-    console.log("[DEBUG] Resultados de turnos de menores:");
-    turnosMenores.forEach((turno, index) => {
-      console.log(`[DEBUG] Turno ${index + 1}:`, turno);
-    });
 
     res.json({ success: true, data: turnos, menores: turnosMenores });
   } catch (error) {
