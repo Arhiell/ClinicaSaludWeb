@@ -1,5 +1,6 @@
 .perfil {
-  max-width: 600px;
+  max-width: 800px;
+  min-width: 600px;
   margin: 40px auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
@@ -7,12 +8,22 @@
 }
 
 .titulo-contenedor {
-  text-align: center;
-  margin-bottom: 30px;
+  background: #9acefb;
+  border: 2px solid #0c7ef9;
+  border-radius: 12px;
+  padding: 20px 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.15);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-.titulo {
-  font-size: 2.5rem;
+.titulo-contenedor .titulo {
+  margin: 0;
+  font-size: 2.2rem;
   color: #004080;
   font-weight: 700;
   letter-spacing: 1px;

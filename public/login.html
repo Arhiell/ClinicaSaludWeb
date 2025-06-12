@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acceso Pacientes Clínica</title>
     <link rel="stylesheet" href="CSS/Login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <div class="login-container">
@@ -12,20 +16,25 @@
         <img class="logo" src="\img\logotipo.avif" alt="Logo Clínica Goya" />
         <h2>Iniciar Sesión</h2>
         <form id="login-form" action="/login" method="POST">
-          <input
-            type="text"
-            name="usuario"
-            placeholder="Nombre de Usuario"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            required
-          />
+          <div class="input-icon">
+            <i class="fa-solid fa-user"></i>
+            <input
+              type="text"
+              name="usuario"
+              placeholder="Nombre de Usuario"
+              required
+            />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input
+              type="password"
+              name="password"
+              placeholder="Contraseña"
+              required
+            />
+          </div>
           <button type="submit">Ingresar</button>
-          <!--- mensaje de error -->
           <p id="login-error" class="error-msg"></p>
         </form>
         <p>
@@ -37,25 +46,57 @@
       <div class="login-card" id="registerForm">
         <h2>Registro de Paciente</h2>
         <form id="register-form" action="/register" method="POST">
-          <input type="text" name="nombre" placeholder="Nombre" required />
-          <input type="text" name="apellido" placeholder="Apellido" required />
-          <input type="text" name="dni" placeholder="DNI" required />
-          <input type="email" name="email" placeholder="email" required />
-          <input type="text" name="telefono" placeholder="Teléfono" />
-          <input type="text" name="direccion" placeholder="Dirección" />
-          <input type="date" name="fecha_nacimiento" required />
-          <input
-            type="text"
-            name="nombre_usuario"
-            placeholder="Nombre de Usuario"
-            required
-          />
-          <input
-            type="password"
-            name="contrasena"
-            placeholder="Contraseña"
-            required
-          />
+          <div class="input-icon">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" name="nombre" placeholder="Nombre" required />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-user"></i>
+            <input
+              type="text"
+              name="apellido"
+              placeholder="Apellido"
+              required
+            />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="text" name="dni" placeholder="DNI" required />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" name="email" placeholder="email" required />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-phone"></i>
+            <input type="text" name="telefono" placeholder="Teléfono" />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-location-dot"></i>
+            <input type="text" name="direccion" placeholder="Dirección" />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-calendar"></i>
+            <input type="date" name="fecha_nacimiento" required />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-user"></i>
+            <input
+              type="text"
+              name="nombre_usuario"
+              placeholder="Nombre de Usuario"
+              required
+            />
+          </div>
+          <div class="input-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input
+              type="password"
+              name="contrasena"
+              placeholder="Contraseña"
+              required
+            />
+          </div>
 
           <button type="submit">Registrarse</button>
           <p id="register-success" class="success-msg"></p>
