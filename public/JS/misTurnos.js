@@ -84,8 +84,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     mostrarTodosTurnos = !mostrarTodosTurnos; // Alternar estado
     cargarTurnos(mostrarTodosTurnos);
     verMasTurnosBtn.textContent = mostrarTodosTurnos
-      ? "Ver menos turnos"
-      : "Ver más turnos";
+      ? "Ver Menos Turnos "
+      : "Ver Más Turnos";
   });
 
   // Manejar clic en "Ver más turnos de menores"
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     mostrarTodosTurnosMenores = !mostrarTodosTurnosMenores; // Alternar estado
     cargarTurnosMenores(mostrarTodosTurnosMenores);
     verMasTurnosMenoresBtn.textContent = mostrarTodosTurnosMenores
-      ? "Ver menos turnos de menores"
-      : "Ver más turnos de menores";
+      ? "Ver Menos Turnos "
+      : "Ver Más Turnos";
   });
 });

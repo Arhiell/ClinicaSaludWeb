@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inicio - Clínica Goya</title>
     <link rel="stylesheet" href="../CSS/inicio.css" />
+    <link rel="stylesheet" href="../CSS/misTurns.css" />
   </head>
   <body>
     <header>
@@ -25,77 +26,65 @@
       </nav>
     </header>
 
-    <main>
-      <h1>Mis Turnos</h1>
-      <p>
-        Tus turnos se mostrarán aquí. Podrás ver los detalles de cada uno, como
-        la fecha, hora y médico asignado.
-      </p>
+    <main class="contenedor-turnos">
+      <!-- Tarjeta del encabezado -->
+      <div class="tarjeta-header-turnos">
+        <h1 class="titulo-turnos">Mis Turnos Médicos</h1>
+        <p class="descripcion-turnos">
+          Aquí verás un resumen de tus próximos turnos. Podrás consultar la
+          fecha, hora, especialidad y profesional asignado, tanto tuyos como de
+          los menores a cargo.
+        </p>
+      </div>
 
-      <!-- Tabla de turnos propios -->
-      <h2>Turnos personales</h2>
-      <table id="listaTurnos">
-        <thead>
-          <tr>
-            <th>Comprobante</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Médico</th>
-            <th>Especialidad</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="cuerpoTurnos"></tbody>
-      </table>
-      <p
-        id="mensajeNoTurnos"
-        class="oculto"
-        style="
-          color: red;
-          font-size: 0.9rem;
-          text-align: center;
-          margin-top: 5px;
-        "
-      ></p>
-      <button id="verMasTurnos">Ver más turnos</button>
+      <!-- Tarjeta de turnos personales -->
+      <section class="tarjeta-turnos">
+        <h2 class="subtitulo-turnos">Turnos Personales</h2>
+        <table class="tabla-estilizada">
+          <thead>
+            <tr>
+              <th>Comprobante</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Médico</th>
+              <th>Especialidad</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTurnos"></tbody>
+        </table>
+        <p id="mensajeNoTurnos" class="mensaje-error oculto"></p>
+        <button id="verMasTurnos" class="boton-vermas">Ver Más turnos</button>
+      </section>
 
-      <!-- Tabla de turnos de menores -->
-      <h2>Turnos de menores a cargo</h2>
-      <table id="listaTurnosMenores">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Comprobante</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Médico</th>
-            <th>Especialidad</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="cuerpoTurnosMenores"></tbody>
-      </table>
-      <p
-        id="mensajeNoTurnosMenores"
-        class="oculto"
-        style="
-          color: red;
-          font-size: 0.9rem;
-          text-align: center;
-          margin-top: 5px;
-        "
-      ></p>
-      <button id="verMasTurnosMenores">Ver más turnos de menores</button>
+      <!-- Tarjeta de turnos de menores -->
+      <section class="tarjeta-turnos">
+        <h2 class="subtitulo-turnos">Turnos de Menores a Cargo</h2>
+        <table class="tabla-estilizada">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Comprobante</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Médico</th>
+              <th>Especialidad</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTurnosMenores"></tbody>
+        </table>
+        <p id="mensajeNoTurnosMenores" class="mensaje-error oculto"></p>
+        <button id="verMasTurnosMenores" class="boton-vermas">
+          Ver Más turnos
+        </button>
+      </section>
     </main>
 
     <footer>
       <p>Dirección: Calle Ficticia 123, Goya, Corrientes</p>
       <p>Teléfono: (03777) 123456 - Email: contacto@clinicagoya.com</p>
     </footer>
-    <script src="../JS/menuDesple.js"></script>
-
-    <script></script>
-
     <script src="../JS/menuDesple.js"></script>
     <script src="../JS/misTurnos.js"></script>
   </body>
