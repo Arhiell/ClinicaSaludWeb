@@ -154,16 +154,27 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
   })
     .then((res) => res.json())
     .then((data) => {
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeExito = document.getElementById("mensajeExito");
       if (data.success) {
-        alert("Turno registrado con éxito");
+         mensajeExito.textContent = "Turno registrado con éxito";
+        mensajeExito.style.display = "block";
+        mensajeError.style.display = "none";
         document.getElementById("formTurno").reset();
         document.getElementById("seccionMenor").style.display = "none";
       } else {
-        alert("Error al registrar turno: " + data.error);
+        mensajeError.textContent = "Error al registrar turno: " + data.error;
+        mensajeError.style.display = "block";
+        mensajeExito.style.display = "none";
       }
     })
     .catch((err) => {
       console.error("Error al guardar el turno:", err);
-      alert("Ocurrió un error al intentar registrar el turno.");
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeExito = document.getElementById("mensajeExito");
+      mensajeError.textContent =
+        "Ocurrió un error al intentar registrar el turno.";
+      mensajeError.style.display = "block";
+      mensajeExito.style.display = "none";
     });
 });

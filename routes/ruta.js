@@ -440,7 +440,7 @@ router.post("/guardar-turno", async (req, res) => {
       const emailTutor = usuarioLogueado?.email;
       const telefonoTutor = usuarioLogueado?.telefono || null;
       const direccionTutor = usuarioLogueado?.direccion || null;
-      const estadoActivo = 1;
+      const estadoActivo = 1; // Asumiendo 1 es el estado activo
 
       if (!idTutorPersona || !emailTutor) {
         return res
@@ -615,7 +615,7 @@ router.post("/guardar-turno", async (req, res) => {
     // 7. Insertar el turno en la base de datos
     const insertarTurno = `
       INSERT INTO turno (comprobante, id_paciente, id_profesional, fecha_hora, duracion, id_estado)
-      VALUES (?, ?, ?, ?, ?, 1)`; // 1: Estado activo
+      VALUES (?, ?, ?, ?, ?, 9)`; // 9: Estado "Pendiente" (asumiendo que es el estado inicial)
 
     await conexion.promise().query(insertarTurno, [
       comprobante,
