@@ -363,3 +363,12 @@ nav ul.menu li a.cerrarSesion:focus {
   background-color: #0056b3; /* Hover diferente si deseas */
   color: white;
 }
+main p {
+  margin: 5px;
+  font-size: 1.1rem;
+  color: #000000;
+}
+main strong{
+  color:#004a99;
+  font-weight: bold;
+}
