@@ -93,6 +93,38 @@ body {
   text-decoration: underline;
 }
 
+.input-icon {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-icon i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #007bff;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.input-icon input {
+  padding-left: 35px; /* espacio para el ícono */
+  width: 100%;
+  height: 38px;
+  font-size: 1rem;
+  border: 1.5px solid #007bff;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.input-icon input:focus {
+  border-color: #0056b3;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 86, 179, 0.3);
+}
+
 /* Animación de entrada */
 @keyframes fadeIn {
   from {

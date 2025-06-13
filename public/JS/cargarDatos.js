@@ -30,6 +30,7 @@ document.getElementById("doctor").addEventListener("change", function () {
     .then((fechas) => {
       console.log("Fechas recibidas del backend:", fechas);
       selectFecha.disabled = fechas.length === 0;
+      selectFecha.innerHTML = '<option value="">-- Seleccionar día --</option>'; // Limpiar opciones anteriores
       if (fechas.length > 0) {
         fechas.forEach((fecha) => {
           const option = document.createElement("option");
@@ -37,7 +38,15 @@ document.getElementById("doctor").addEventListener("change", function () {
           option.textContent = fecha;
           selectFecha.appendChild(option);
         });
+      } else {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No hay días disponibles";
+        selectFecha.appendChild(option);
       }
+    })
+    .catch((error) => {
+      console.error("Error al cargar días disponibles:", error);
     });
 });
 
@@ -88,14 +97,23 @@ document.getElementById("fecha").addEventListener("change", function () {
     .then((res) => res.json())
     .then((data) => {
       console.log("Horarios recibidos del backend:", data);
-      data.forEach((horario) => {
+      selectHora.innerHTML = '<option value="">-- Seleccioná horario --</option>'; // Limpiar opciones anteriores
+      if (data.length > 0) {
+        data.forEach((horario) => {
+          const option = document.createElement("option");
+          option.value = horario.hora_inicio;
+          option.textContent = horario.hora_inicio; // Mostrar solo hora_inicio
+          selectHora.appendChild(option);
+        });
+      } else {
         const option = document.createElement("option");
-        // *** MODIFICACIÓN AQUÍ: Usar solo hora_inicio como valor ***
-        option.value = horario.hora_inicio;
-        // *********************************************************
-        option.textContent = horario.hora_inicio + " - " + horario.hora_fin;
+        option.value = "";
+        option.textContent = "No hay horarios disponibles";
         selectHora.appendChild(option);
-      });
+      }
+    })
+    .catch((error) => {
+      console.error("Error al cargar horarios disponibles:", error);
     });
 });
 
@@ -105,7 +123,7 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
 
   const idProfesional = document.getElementById("doctor").value;
   const fecha = document.getElementById("fecha").value;
-  const hora = document.getElementById("hora").value; // Ahora solo contendrá la hora de inicio
+  const hora = document.getElementById("hora").value;
 
   const esMenor = document.getElementById("turnoMenor").checked;
 
@@ -123,7 +141,6 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
       dni: document.getElementById("dniMenor").value,
       fechaNacimiento: document.getElementById("fechaNacimientoMenor").value,
       relacion: document.getElementById("relacion").value,
-      // Asegúrate de incluir obraSocialMenor si es necesario para el registro del menor
       obraSocial: document.getElementById("obraSocialMenor")?.value || null,
     };
   }
@@ -154,12 +171,16 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log("Respuesta del servidor:", data); // Depuración
       const mensajeError = document.getElementById("mensajeError");
       const mensajeExito = document.getElementById("mensajeExito");
+
       if (data.success) {
-         mensajeExito.textContent = "Turno registrado con éxito";
+        mensajeExito.textContent = "Turno registrado con éxito.";
         mensajeExito.style.display = "block";
         mensajeError.style.display = "none";
+
+        // Resetear el formulario y ocultar la sección del menor
         document.getElementById("formTurno").reset();
         document.getElementById("seccionMenor").style.display = "none";
       } else {
@@ -172,6 +193,7 @@ document.getElementById("formTurno").addEventListener("submit", (e) => {
       console.error("Error al guardar el turno:", err);
       const mensajeError = document.getElementById("mensajeError");
       const mensajeExito = document.getElementById("mensajeExito");
+
       mensajeError.textContent =
         "Ocurrió un error al intentar registrar el turno.";
       mensajeError.style.display = "block";

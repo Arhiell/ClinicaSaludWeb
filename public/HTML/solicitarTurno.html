@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inicio - Clínica Goya</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="../CSS/inicio.css" />
     <link rel="stylesheet" href="../CSS/solicitarTurno.css" />
   </head>
@@ -14,7 +18,11 @@
       <nav>
         <ul class="menu">
           <li><a href="../HTML/inicio.html">Inicio</a></li>
-          <li><a href="../HTML/solicitarTurno.html" class="activo">Solicitar Turno</a></li>
+          <li>
+            <a href="../HTML/solicitarTurno.html" class="activo"
+              >Solicitar Turno</a
+            >
+          </li>
           <li><a href="../HTML/misTurno.html">Mis Turnos</a></li>
           <li><a href="../HTML/misDatos.html">Mis Datos</a></li>
           <li>
@@ -35,63 +43,172 @@
         </p>
 
         <form id="formTurno">
-          <label for="especialidad">Especialidad:</label>
+          <label for="especialidad">
+            <i
+              class="fa-solid fa-stethoscope"
+              style="color: #2d89e5; margin-right: 6px"
+            ></i>
+            Especialidad:</label
+          >
           <select id="especialidad" name="especialidad" required>
             <option value="">-- Seleccionar Especialidad --</option>
           </select>
 
-          <label for="doctor">Especialista:</label>
+          <label for="doctor">
+            <i
+              class="fa-solid fa-user-md"
+              style="color: #2d89e5; margin-right: 6px"
+            ></i>
+            Especialista:</label
+          >
           <select id="doctor" name="doctor" required>
             <option value="">-- Seleccionar Especialista --</option>
           </select>
 
-          <label for="fecha">Fecha:</label>
+          <label for="fecha">
+            <i
+              class="fa-solid fa-calendar-days"
+              style="color: #2d89e5; margin-right: 6px"
+            ></i>
+            Fecha:</label
+          >
           <select id="fecha" name="fecha" required>
             <option value="">-- Seleccionar día --</option>
           </select>
 
-          <label for="hora">Horario disponible:</label>
+          <label for="hora">
+            <i
+              class="fa-solid fa-clock"
+              style="color: #2d89e5; margin-right: 6px"
+            ></i>
+            Horario disponible:</label
+          >
           <select id="hora" name="hora" required>
             <option value="">-- Seleccioná fecha --</option>
           </select>
 
           <!-- Turno para menor -->
-          <label>
-            <input type="checkbox" id="turnoMenor" />
-            Turno para menor
-          </label>
+          <div class="seccion-checkbox">
+            <label class="switch-label">
+              <input type="checkbox" id="turnoMenor" />
+              <span class="switch-slider"></span>
+              <span class="switch-text">
+                <i class="fa-solid fa-child-reaching"></i> Turno para menor
+              </span>
+            </label>
+          </div>
 
           <div id="seccionMenor" style="display: none">
-            <label for="nombreMenor">Nombre Completo del Menor:</label>
-            <input type="text" id="nombreMenor" name="nombreMenor" />
+            <div class="input-icon">
+              <input
+                type="text"
+                id="nombreMenor"
+                name="nombreMenor"
+                placeholder="Nombre del Menor"
+              />
+            </div>
 
-            <label for="apellidoMenor">Apellido del Menor:</label>
-            <input type="text" id="apellidoMenor" name="apellidoMenor" />
+            <div class="input-icon">
+              <input
+                type="text"
+                id="apellidoMenor"
+                name="apellidoMenor"
+                placeholder="Apellido del Menor"
+              />
+            </div>
 
-            <label for="dniMenor">DNI del Menor:</label>
-            <input type="text" id="dniMenor" name="dniMenor" />
+            <div class="input-icon">
+              <input
+                type="text"
+                id="dniMenor"
+                name="dniMenor"
+                placeholder="DNI del Menor"
+              />
+            </div>
 
-            <label for="fechaNacimientoMenor">Fecha de Nacimiento:</label>
-            <input
-              type="date"
-              id="fechaNacimientoMenor"
-              name="fechaNacimientoMenor"
-            />
+            <div class="input-icon">
+              <input
+                type="date"
+                id="fechaNacimientoMenor"
+                name="fechaNacimientoMenor"
+              />
+            </div>
 
-            <label for="relacion">Relación con el menor:</label>
-            <input type="text" id="relacion" name="relacion" />
+            <div class="input-icon">
+              <input
+                type="text"
+                id="relacion"
+                name="relacion"
+                placeholder="Parentesco con Menor"
+              />
+            </div>
           </div>
 
           <button type="submit" id="confirmarTurno">Solicitar Turno</button>
-          <div id="mensajeError" style="color: red; display: none;"></div>
-          <div id="mensajeExito" style="color: green; display: none;"></div>
+
+          <!-- Mensajes de éxito y error -->
+          <div id="mensajeError" style="color: red; display: none"></div>
+          <div id="mensajeExito" style="color: green; display: none"></div>
         </form>
       </div>
     </main>
 
-    <footer>
-      <p>Dirección: Calle Ficticia 123, Goya, Corrientes</p>
-      <p>Teléfono: (03777) 123456 - Email: contacto@clinicagoya.com</p>
+    <footer class="footer">
+      <div class="footer-container">
+        <!-- Columna Izquierda -->
+        <div class="footer-column">
+          <h4><i class="fa-solid fa-location-dot"></i> Dirección</h4>
+          <hr />
+          <p><i class="fa-solid fa-road"></i> Calle Ficticia 123</p>
+          <p><i class="fa-solid fa-city"></i> Goya, Corrientes</p>
+          <p><i class="fa-solid fa-flag"></i> Argentina</p>
+        </div>
+
+        <!-- Columna Centro -->
+        <div class="footer-column">
+          <h4><i class="fa-solid fa-phone-volume"></i> Contacto</h4>
+          <hr />
+          <p><i class="fa-solid fa-phone"></i> Fijo: (03777) 123456</p>
+          <p>
+            <i class="fa-solid fa-mobile-screen-button"></i> Celular: +54 9 3777
+            654321
+          </p>
+          <p>
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp: +54 9 3777 654321
+          </p>
+          <hr />
+          <p><i class="fa-solid fa-envelope"></i> contacto@clinicagoya.com</p>
+
+          <hr />
+          <div class="footer-social">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i> Facebook</a>
+            <a href="#"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          </div>
+        </div>
+
+        <!-- Columna Derecha -->
+        <!-- Columna Derecha -->
+        <div class="footer-column">
+          <h4><i class="fa-solid fa-clock"></i> Horario de Atención</h4>
+          <hr />
+          <p><i class="fa-solid fa-calendar-day"></i> Lunes a Viernes</p>
+          <p>
+            <i class="fa-regular fa-clock"></i> 08:00 a 12:30 hs | 16:00 a 18:00
+            hs
+          </p>
+          <p>
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <strong>Feriados, Sábados y Domingos:</strong>
+          </p>
+          <p><i class="fa-solid fa-ban"></i> Cerrado</p>
+        </div>
+      </div>
+
+      <div class="footer-copy">
+        <hr />
+        <p>&copy; 2025 Clínica Goya. Todos los derechos reservados.</p>
+        <p>Diseño y desarrollo por el equipo IT de Clínica Goya</p>
+      </div>
     </footer>
 
     <script src="/JS/cargarDatos.js"></script>

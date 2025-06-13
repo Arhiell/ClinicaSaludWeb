@@ -1,114 +1,162 @@
+.perfil {
+  max-width: 800px;
+  min-width: 600px;
+  margin: 40px auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  padding: 0 20px;
+}
 
-/* Contenedor para el título "Mis Datos" */
 .titulo-contenedor {
-  background-color: #e0eaf5; /* Azul muy claro */
-  border: 2px solid #a0c4de; /* Borde azul intermedio */
-  padding: 1rem;
-  border-radius: 10px;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-/* Título en azul fuerte */
-.titulo {
-  margin: 0;
-  color: #007b9a;
-}
-
-/* Campos de datos del usuario como Nombre, Usuario, etc. */
-.datosUsuario .campo {
-  margin: 1rem 0;
-  padding: 1rem;
-  background-color: #f7f7f7; /* Gris claro */
-  box-shadow: 0 0 5px rgba(128, 128, 128, 0.3); /* Sombra gris */
-  border-radius: 6px;
-}
-
-/* Contenedor de botones con separación */
-.botones {
-  margin-top: 1.5rem;
+  background: #9acefb;
+  border: 2px solid #0c7ef9;
+  border-radius: 12px;
+  padding: 20px 30px;
+  margin: 30px;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.15);
+  max-width: 100%;
   display: flex;
-  gap: 1rem;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Botón "Modificar Datos" */
-.modificarBtn {
-  background-color: #007b9a; /* Azul fuerte */
-  color: white;
-  padding: 0.7rem 1.2rem;
-  border: none;
-  border-radius: 4px;
+.titulo-contenedor .titulo {
+  margin: 0;
+  font-size: 2.2rem;
+  color: #004080;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Contenedor dl con gap vertical */
+.datos-usuario {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+/* Cada par dt/dd dentro de un "cajón" con sombra */
+.datos-usuario div {
+  background: #f9faff;
+  border: 1.5px solid #007bff;
+  border-radius: 12px;
+  padding: 15px 20px;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* dt estilo label */
+.datos-usuario dt {
+  font-weight: 600;
+  color: #0056b3;
+  flex: 0 0 40%;
+  border-right: 2px solid #007bff;
+  padding-right: 15px;
+  margin: 0;
+}
+
+/* dd estilo valor */
+.datos-usuario dd {
+  margin: 0;
+  padding-left: 15px;
+  color: #222;
+  font-size: 1rem;
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.botones {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Botones generales */
+.botones button {
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease; /* Animación suave al pasar el mouse */
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin: 0 8px;
+  color: white;
 }
 
-/* Cambio de color al pasar el mouse */
-.modificarBtn:hover {
-  background-color: #00b7d1; /* Azul más brillante */
+/* Botón Modificar (azul) */
+#btnModificar {
+  background-color: #007bff;
+}
+#btnModificar:hover {
+  background-color: #0056b3;
+  box-shadow: 0 0 12px #0056b3;
 }
 
-/* Etiquetas de formulario como "Email", "Teléfono", etc. */
+/* Botón Guardar - verde */
+.boton-guardar {
+  background-color: #28a745;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+.boton-guardar:hover {
+  background-color: #1e7e34;
+  box-shadow: 0 0 12px #1e7e34;
+}
+
+/* Botón Cancelar - rojo */
+.boton-cancelar {
+  background-color: #dc3545;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+.boton-cancelar:hover {
+  background-color: #a71d2a;
+  box-shadow: 0 0 12px #a71d2a;
+}
+
+/* Formulario */
 form label {
   display: block;
-  margin-top: 1rem;
+  font-weight: 600;
+  color: #004080;
+  margin-bottom: 8px;
+  margin-top: 20px;
+  font-size: 1rem;
 }
 
-/* Campos de entrada de texto */
-input {
+form input[type="text"],
+form input[type="email"],
+form input[type="tel"] {
   width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.3rem;
-  border: 1px solid #ccc; /* Borde gris claro */
-  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.5px solid #007bff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
-/* Botón "Guardar Cambios" */
-.guardar {
-  background-color: #0499be;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-/* Al pasar el mouse por "Guardar Cambios", se vuelve verde */
-.guardar:hover {
-  background-color: #28a745; /* Verde cálido */
-}
-
-/* Botón de tipo "button", usado para cancelar */
-button[type="button"] {
-  background-color: #888; /* Gris medio */
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Si querés que al pasar el mouse por cancelar cambie a rojo */
-button[type="button"]:hover {
-  background-color: #dc3545; /* Rojo */
-}
-
-/* Clase para ocultar elementos */
-.oculto {
-  display: none;
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="tel"]:focus {
+  border-color: #0056b3;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 86, 179, 0.3);
 }
 
 .mensajeError {
-  color: #dc3545; /* Rojo */
-    font-size: 0.9rem;
+  color: #dc3545;
+  margin-top: 15px;
+  font-weight: 600;
   text-align: center;
-  margin-top: 5px;
 }
 
 .mensajeExito {
-  color: #28a745; /* Verde */
-  font-size: 0.9rem;
+  color: #28a745;
+  margin-top: 15px;
+  font-weight: 600;
   text-align: center;
-  margin-top: 5px;
 }

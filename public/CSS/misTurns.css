@@ -1,0 +1,112 @@
+.contenedor-turnos {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
+
+.tarjeta-header-turnos {
+  background-color: #007bffeb;
+  padding: 30px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.tarjeta-header-turnos .titulo-turnos {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.tarjeta-header-turnos .descripcion-turnos {
+  color: #e6f0ff;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.tarjeta-turnos {
+  background-color: #b3d8ff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.subtitulo-turnos {
+  font-size: 1.5rem;
+  color: #5cabff;
+  background-color: #fefeff;
+  border: 2px solid #d2e7fd;
+  padding: 10px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.tabla-estilizada {
+  width: 100%;
+  user-select: none;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.tabla-estilizada th:hover,
+.tabla-estilizada th:focus,
+.tabla-estilizada th:active {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.tabla-estilizada thead {
+  background-color: #007bff;
+  color: white;
+}
+
+.tabla-estilizada th,
+.tabla-estilizada td {
+  padding: 18px;
+  border-bottom: 1px solid #007bff;
+  text-align: left;
+}
+
+.tabla-estilizada tr:hover {
+  background-color: #70aded;
+}
+
+.boton-vermas {
+  margin-top: 15px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.boton-vermas:hover {
+  background-color: #0056b3;
+}
+
+.boton-vermas:active {
+  transform: scale(0.98);
+  background-color: #004085;
+}
+
+.mensaje-error {
+  color: red;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-top: 10px;
+}

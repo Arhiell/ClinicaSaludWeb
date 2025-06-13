@@ -93,3 +93,34 @@ form#formTurno button:hover {
     margin: 1rem;
   }
 }
+
+.input-icon {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-icon i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2d89e5;
+  font-size: 1.2rem; /* ícono un poco más grande */
+  pointer-events: none;
+}
+
+.input-icon input {
+  padding-left: 2.8rem; /* un poco más para que no choque */
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 2.8rem;
+}
+
+.input-icon input::placeholder {
+  color: #888;
+  opacity: 1;
+  line-height: normal;
+}

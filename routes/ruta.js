@@ -177,15 +177,14 @@ router.get("/profesionales", (req, res) => {
   );
 });
 
-// Obtener horarios disponibles para un profesional y fecha (fraccionado cada 30 min, máx 10 turnos, permite turnos simultáneos)
-router.get("/horarios-disponibles", (req, res) => {
-  // Recibe: id_profesional y fecha. Devuelve los horarios posibles de ese día para ese profesional, si hay menos de 10 turnos agendados.
+router.get("/horarios-disponibles", async (req, res) => {
   const id_profesional = req.query.id_profesional;
   const fecha = req.query.fecha;
-  if (!id_profesional || !fecha)
-    return res.status(400).json({ error: "Faltan parámetros" });
 
-  // Obtener el día de la semana en español (con tilde)
+  if (!id_profesional || !fecha) {
+    return res.status(400).json({ error: "Faltan parámetros" });
+  }
+
   const diasSemana = [
     "Domingo",
     "Lunes",
@@ -195,204 +194,157 @@ router.get("/horarios-disponibles", (req, res) => {
     "Viernes",
     "Sábado",
   ];
-  // Corregido: calcular día de la semana en UTC para evitar errores de zona horaria
-  const fechaObj = new Date(fecha + "T12:00:00Z"); // Mediodía UTC
-  console.log(
-    "[DEBUG] fechaObj ISO:",
-    fechaObj.toISOString(),
-    "getUTCDay():",
-    fechaObj.getUTCDay()
-  );
-  let diaNombre = diasSemana[fechaObj.getUTCDay()];
-  // Parche temporal: si la fecha es 2025-06-02, forzar Lunes
-  if (fecha === "2025-06-02") {
-    diaNombre = "Lunes";
-    console.log(
-      "[DEBUG] Parche aplicado: Forzando diaNombre a Lunes para 2025-06-02"
+  const fechaObj = new Date(fecha + "T12:00:00Z");
+  const diaNombre = diasSemana[fechaObj.getUTCDay()];
+
+  try {
+    // Obtener rango horario del profesional para ese día
+    const [horario] = await conexion.promise().query(
+      `SELECT hora_inicio, hora_fin
+       FROM horario_disponible
+       WHERE id_profesional = ? AND dia_semana = ? AND id_estado = 1
+       LIMIT 1`,
+      [id_profesional, diaNombre]
     );
-  }
-  console.log(
-    "[DEBUG] diaNombre:",
-    diaNombre,
-    "id_profesional:",
-    id_profesional,
-    "fecha:",
-    fecha
-  );
 
-  // 1. Buscar el rango horario del profesional para ese día
-  conexion.query(
-    `SELECT hora_inicio, hora_fin
-     FROM horario_disponible
-     WHERE id_profesional = ? AND dia_semana = ? AND id_estado = 1
-     LIMIT 1`,
-    [id_profesional, diaNombre],
-    (error, results) => {
-      console.log("[DEBUG] Resultados horario_disponible:", results);
-      if (error)
-        return res.status(500).json({ error: "Error en la base de datos" });
-      if (results.length === 0) {
-        console.log(
-          "[DEBUG] No se encontró horario_disponible para ese profesional y día"
-        );
-        return res.json([]);
-      }
-
-      const { hora_inicio, hora_fin } = results[0];
-      console.log("[DEBUG] hora_inicio:", hora_inicio, "hora_fin:", hora_fin);
-
-      // 2. Buscar la cantidad total de turnos ya reservados para ese profesional y fecha
-      conexion.query(
-        `SELECT COUNT(*) as cantidad FROM turno WHERE id_profesional = ? AND DATE(fecha_hora) = ?`,
-        [id_profesional, fecha],
-        (err2, turnos) => {
-          if (err2)
-            return res.status(500).json({ error: "Error en la base de datos" });
-          if (turnos[0].cantidad >= 10) {
-            console.log("[DEBUG] Ya hay 10 turnos para ese día");
-            return res.json([]); // Si ya hay 10 turnos, no mostrar horarios
-          }
-
-          // 3. Generar los intervalos de 30 minutos usando lógica similar a generarIntervalos, pero con fecha base fija
-          console.log(
-            "[DEBUG] hora_inicio (raw):",
-            hora_inicio,
-            typeof hora_inicio
-          );
-          console.log("[DEBUG] hora_fin (raw):", hora_fin, typeof hora_fin);
-          const [inicioHoras, inicioMinutos] = String(hora_inicio)
-            .split(":")
-            .map(Number);
-          const [finHoras, finMinutos] = String(hora_fin)
-            .split(":")
-            .map(Number);
-          let fechaInicio = new Date(`2000-01-01T${hora_inicio}`);
-          let fechaFin = new Date(`2000-01-01T${hora_fin}`);
-          console.log(
-            "[DEBUG] fechaInicio:",
-            fechaInicio,
-            "fechaFin:",
-            fechaFin
-          );
-
-          let horarios = [];
-          let count = 0;
-          while (fechaInicio < fechaFin && count < 20) {
-            const horaStr = fechaInicio.toTimeString().substring(0, 5) + ":00";
-            let siguiente = new Date(fechaInicio.getTime() + 30 * 60000);
-            let horaFinStr =
-              siguiente <= fechaFin
-                ? siguiente.toTimeString().substring(0, 5) + ":00"
-                : fechaFin.toTimeString().substring(0, 5) + ":00";
-            console.log(
-              `[DEBUG] Slot ${
-                count + 1
-              }: hora_inicio=${horaStr}, hora_fin=${horaFinStr}`
-            );
-            horarios.push({
-              hora_inicio: horaStr,
-              hora_fin: horaFinStr,
-            });
-            if (siguiente >= fechaFin) break;
-            fechaInicio = siguiente;
-            count++;
-          }
-          console.log("[DEBUG] Horarios generados:", horarios);
-          res.json(horarios);
-        }
-      );
+    if (horario.length === 0) {
+      return res.json([]); // No hay horarios disponibles
     }
-  );
+
+    const { hora_inicio, hora_fin } = horario[0];
+
+    // Verificar si el día ya tiene 10 turnos
+    const [turnosPorDia] = await conexion.promise().query(
+      `SELECT COUNT(*) as cantidad
+       FROM turno
+       WHERE id_profesional = ? AND DATE(fecha_hora) = ?`,
+      [id_profesional, fecha]
+    );
+
+    if (turnosPorDia[0].cantidad >= 3) {
+      return res.json([]); // Día completo
+    }
+
+    // Generar horarios de 30 minutos
+    let fechaInicio = new Date(`2000-01-01T${hora_inicio}`);
+    let fechaFin = new Date(`2000-01-01T${hora_fin}`);
+    let horarios = [];
+
+    while (fechaInicio < fechaFin) {
+      const horaStr = fechaInicio.toTimeString().substring(0, 5) + ":00";
+      horarios.push(horaStr);
+      fechaInicio = new Date(fechaInicio.getTime() + 30 * 60000);
+    }
+
+    // Verificar disponibilidad de cada horario
+    const consultas = horarios.map((hora) => {
+      const fechaHoraStr = `${fecha} ${hora}`;
+      return conexion.promise().query(
+        `SELECT COUNT(*) as cantidad
+         FROM turno
+         WHERE id_profesional = ? AND fecha_hora = ?`,
+        [id_profesional, fechaHoraStr]
+      );
+    });
+
+    const resultados = await Promise.all(consultas);
+
+    const horariosDisponibles = horarios.filter((hora, index) => {
+      return resultados[index][0][0].cantidad < 2; // Solo incluir horarios con menos de 2 pacientes
+    });
+
+    const respuestaHorarios = horariosDisponibles.map((hora) => {
+      if (!hora_inicio || !hora_fin) {
+        return { hora_inicio: hora };
+      } else {
+        return { hora_inicio: hora, rango_definido: true };
+      }
+    });
+
+    res.json(respuestaHorarios);
+  } catch (error) {
+    console.error("[DEBUG] Error en /horarios-disponibles:", error);
+    res.status(500).json({ error: "Error en la base de datos" });
+  }
 });
 
-// Función auxiliar para sumar 30 minutos y devolver string HH:MM:SS
-// Recibe hora y minutos, retorna el string del horario final del turno
-function add30Min(h, m) {
-  m += 30;
-  if (m >= 60) {
-    h += 1;
-    m -= 60;
-  }
-  return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:00`;
-}
-
 // Obtener días disponibles para un profesional (solo días con menos de 10 turnos y que no sean feriados)
-router.get("/dias-disponibles", (req, res) => {
-  // Recibe: id_profesional. Devuelve los próximos 14 días hábiles (no feriados) en los que el profesional atiende y no tiene 10 turnos agendados.
+router.get("/dias-disponibles", async (req, res) => {
   const id_profesional = req.query.id_profesional;
-  if (!id_profesional)
+
+  if (!id_profesional) {
     return res.status(400).json({ error: "Falta parámetro id_profesional" });
+  }
 
-  // Buscar los días de la semana en los que el profesional atiende
-  conexion.query(
-    `SELECT DISTINCT hd.dia_semana
-     FROM horario_disponible hd
-     WHERE hd.id_profesional = ? AND hd.id_estado = 1`,
-    [id_profesional],
-    (error, dias) => {
-      if (error)
-        return res.status(500).json({ error: "Error en la base de datos" });
+  try {
+    // Obtener días de la semana en los que el profesional atiende
+    const [dias] = await conexion.promise().query(
+      `SELECT DISTINCT hd.dia_semana
+       FROM horario_disponible hd
+       WHERE hd.id_profesional = ? AND hd.id_estado = 1`,
+      [id_profesional]
+    );
 
-      const hoy = new Date();
-      const fechas = [];
-      for (let i = 0; i < 14; i++) {
-        const fecha = new Date(hoy);
-        fecha.setDate(hoy.getDate() + i);
-        const diasSemana = [
-          "Domingo",
-          "Lunes",
-          "Martes",
-          "Miércoles",
-          "Jueves",
-          "Viernes",
-          "Sábado",
-        ];
-        const diaNombre = diasSemana[fecha.getDay()];
-        if (dias.some((d) => d.dia_semana === diaNombre)) {
-          fechas.push(fecha.toISOString().slice(0, 10));
-        }
-      }
-      if (fechas.length === 0) return res.json([]);
-      // Filtrar fechas que no sean feriados nacionales
-      const feriados2025 = [
-        "2025-01-01", // Año Nuevo
-        "2025-02-03", // Carnaval
-        "2025-02-04", // Carnaval
-        "2025-03-24", // Día de la Memoria
-        "2025-04-02", // Malvinas
-        "2025-04-18", // Viernes Santo
-        "2025-05-01", // Día del Trabajador
-        "2025-05-25", // Revolución de Mayo
-        "2025-06-16", // Paso a la Inmortalidad de Güemes
-        "2025-06-20", // Paso a la Inmortalidad de Belgrano
-        "2025-07-09", // Independencia
-        "2025-08-18", // Paso a la Inmortalidad de San Martín (trasladado)
-        "2025-10-13", // Diversidad Cultural (trasladado)
-        "2025-12-08", // Inmaculada Concepción
-        "2025-12-25", // Navidad
+    const hoy = new Date();
+    const fechas = [];
+    for (let i = 0; i < 14; i++) {
+      const fecha = new Date(hoy);
+      fecha.setDate(hoy.getDate() + i);
+      const diasSemana = [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
       ];
-      const fechasNoFeriado = fechas.filter((f) => !feriados2025.includes(f));
-      if (fechasNoFeriado.length === 0) return res.json([]);
-      // Solo fechas a partir de hoy y máximo 10 turnos por día
-      const placeholders = fechasNoFeriado.map(() => "?").join(",");
-      conexion.query(
-        `SELECT DATE(fecha_hora) as fecha, COUNT(*) as cantidad
-         FROM turno
-         WHERE id_profesional = ? AND DATE(fecha_hora) IN (${placeholders})
-         GROUP BY DATE(fecha_hora)`,
-        [id_profesional, ...fechasNoFeriado],
-        (err, turnos) => {
-          if (err)
-            return res.status(500).json({ error: "Error en la base de datos" });
-          const fechasDisponibles = fechasNoFeriado.filter((f) => {
-            const t = turnos.find((tu) => tu.fecha === f);
-            return (!t || t.cantidad < 10) && new Date(f) >= hoy;
-          });
-          res.json(fechasDisponibles);
-        }
-      );
+      const diaNombre = diasSemana[fecha.getDay()];
+      if (dias.some((d) => d.dia_semana === diaNombre)) {
+        fechas.push(fecha.toISOString().slice(0, 10));
+      }
     }
-  );
+
+    // Filtrar fechas que no sean feriados nacionales
+    const feriados2025 = [
+      "2025-01-01",
+      "2025-02-03",
+      "2025-02-04",
+      "2025-03-24",
+      "2025-04-02",
+      "2025-04-18",
+      "2025-05-01",
+      "2025-05-25",
+      "2025-06-16",
+      "2025-06-20",
+      "2025-07-09",
+      "2025-08-18",
+      "2025-10-13",
+      "2025-12-08",
+      "2025-12-25",
+    ];
+    const fechasNoFeriado = fechas.filter((f) => !feriados2025.includes(f));
+
+    // Verificar disponibilidad de cada fecha
+    const placeholders = fechasNoFeriado.map(() => "?").join(",");
+    const [turnos] = await conexion.promise().query(
+      `SELECT DATE(fecha_hora) as fecha, COUNT(*) as cantidad
+       FROM turno
+       WHERE id_profesional = ? AND DATE(fecha_hora) IN (${placeholders})
+       GROUP BY DATE(fecha_hora)`,
+      [id_profesional, ...fechasNoFeriado]
+    );
+
+    const fechasDisponibles = fechasNoFeriado.filter((f) => {
+      const t = turnos.find((tu) => tu.fecha === f);
+      return (!t || t.cantidad < 3) && new Date(f) >= hoy;
+    });
+
+    res.json(fechasDisponibles);
+  } catch (error) {
+    console.error("[DEBUG] Error en /dias-disponibles:", error);
+    res.status(500).json({ error: "Error en la base de datos" });
+  }
 });
 
 // -----------------------------------------------------------------
@@ -592,6 +544,33 @@ router.post("/guardar-turno", async (req, res) => {
     const fechaHoraTurno = `${fecha} ${hora}`; // ejemplo: '2025-06-02 12:00:00'
     const duracionTurno = 30; // Define una duración por defecto en minutos
 
+    // Verificar límite de 10 turnos por día
+    const [turnosPorDia] = await conexion.promise().query(
+      `SELECT COUNT(*) as cantidad
+   FROM turno
+   WHERE id_profesional = ? AND DATE(fecha_hora) = ?`,
+      [idProfesional, fecha]
+    );
+
+    if (turnosPorDia[0].cantidad >= 3) {
+      return res.status(400).json({
+        error: "El profesional ya tiene 10 turnos agendados para este día.",
+      });
+    }
+
+    // Verificar límite de 2 turnos por horario
+    const [turnosPorHorario] = await conexion.promise().query(
+      `SELECT COUNT(*) as cantidad
+   FROM turno
+   WHERE id_profesional = ? AND fecha_hora = ?`,
+      [idProfesional, `${fecha} ${hora}`]
+    );
+
+    if (turnosPorHorario[0].cantidad >= 2) {
+      return res.status(400).json({
+        error: "Este horario ya tiene 2 pacientes agendados.",
+      });
+    }
     // === GENERAR COMPROBANTE AUTOMÁTICO ===
     // Explicación: Este bloque genera un comprobante único para cada turno, siguiendo el formato ST-YYYYMMDD-XXXXXX.
     // El número correlativo se obtiene consultando cuántos turnos existen para la fecha actual y sumando 1.
@@ -641,14 +620,17 @@ router.post("/guardar-turno", async (req, res) => {
 //  -----------------------------------------------------------------
 //       OPTENER LOS TURNOS DEL PACIENTE LOGUEADO
 //------------------------------------------------------------------
+
 router.get("/turnos-paciente", async (req, res) => {
   if (!req.session.user) {
     console.error("[DEBUG] Usuario no autenticado al intentar obtener turnos");
-    return res.status(401).json({ error: "No autorizado" }); // Verificar si el usuario está logueado
+    return res.status(401).json({ error: "No autorizado" });
   }
 
   try {
-    const idPaciente = req.session.user.id_persona; // Debe ser id_paciente
+    const verTodos = req.query.todos === "true";
+    const limite = verTodos ? "" : "LIMIT 3"; // solo 3 si no pidió todos
+    const idPaciente = req.session.user.id_persona;
 
     const [turnos] = await conexion.promise().query(
       `SELECT 
@@ -662,17 +644,49 @@ router.get("/turnos-paciente", async (req, res) => {
        JOIN profesional prof ON prof.id_persona = p_medico.id_persona
        JOIN especialidad e ON prof.id_especialidad = e.id_especialidad
        JOIN estado es ON t.id_estado = es.id_estado
-       WHERE t.id_paciente = ?`,
+       WHERE t.id_paciente = ?
+       ORDER BY t.fecha_hora DESC
+       ${limite}`,
       [idPaciente]
     );
 
-    console.log(
-      `[DEBUG] Turnos obtenidos para paciente (id_persona) ${idPaciente}:`,
-      turnos
+    const idUsuarioLogueado = req.session.user.id_usuario;
+    const [rowsTutor] = await conexion.promise().query(
+      `SELECT t.id_tutor
+       FROM tutor t
+       JOIN persona p ON t.id_persona = p.id_persona
+       JOIN usuario u ON u.id_persona = p.id_persona
+       WHERE u.id_usuario = ?`,
+      [idUsuarioLogueado]
     );
-    res.json({ success: true, data: turnos }); // Devolver los turnos del paciente
+
+    const idTutor = rowsTutor[0]?.id_tutor;
+
+    const [turnosMenores] = await conexion.promise().query(
+      `SELECT 
+         CONCAT(p.nombre, ' ', p.apellido) AS nombre,
+         t.comprobante,
+         t.fecha_hora,
+         CONCAT(p_medico.nombre, ' ', p_medico.apellido) AS medico,
+         e.nombre AS especialidad,
+         es.nombre AS estado
+       FROM paciente_tutor pt
+       JOIN paciente pa ON pt.id_paciente = pa.id_paciente
+       JOIN persona p ON pa.id_persona = p.id_persona
+       JOIN turno t ON t.id_paciente = pa.id_persona
+       JOIN persona p_medico ON t.id_profesional = p_medico.id_persona
+       JOIN profesional prof ON prof.id_persona = p_medico.id_persona
+       JOIN especialidad e ON prof.id_especialidad = e.id_especialidad
+       JOIN estado es ON t.id_estado = es.id_estado
+       WHERE pt.id_tutor = ?
+       ORDER BY t.fecha_hora DESC
+       ${limite}`,
+      [idTutor]
+    );
+
+    res.json({ success: true, data: turnos, menores: turnosMenores });
   } catch (error) {
-    console.error("[DEBUG] Error al obtener los turnos del paciente:", error);
+    console.error("[DEBUG] Error al obtener los turnos:", error);
     res
       .status(500)
       .json({ error: "Ocurrió un error al intentar obtener los turnos." });
