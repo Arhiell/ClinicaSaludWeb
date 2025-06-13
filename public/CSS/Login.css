@@ -155,10 +155,10 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  max-width: 200px;
-  height: 150px;
+  max-width: 350px;
+  height: 250px;
   border-radius: 8px;
-  margin: 10px auto;
+  margin: 10px 10px 0 10px;
 }
 /* mensaje de error */
 .error-msg {
