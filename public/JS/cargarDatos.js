@@ -30,6 +30,7 @@ document.getElementById("doctor").addEventListener("change", function () {
     .then((fechas) => {
       console.log("Fechas recibidas del backend:", fechas);
       selectFecha.disabled = fechas.length === 0;
+      selectFecha.innerHTML = '<option value="">-- Seleccionar día --</option>'; // Limpiar opciones anteriores
       if (fechas.length > 0) {
         fechas.forEach((fecha) => {
           const option = document.createElement("option");
@@ -37,7 +38,15 @@ document.getElementById("doctor").addEventListener("change", function () {
           option.textContent = fecha;
           selectFecha.appendChild(option);
         });
+      } else {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No hay días disponibles";
+        selectFecha.appendChild(option);
       }
+    })
+    .catch((error) => {
+      console.error("Error al cargar días disponibles:", error);
     });
 });
 
@@ -88,14 +97,23 @@ document.getElementById("fecha").addEventListener("change", function () {
     .then((res) => res.json())
     .then((data) => {
       console.log("Horarios recibidos del backend:", data);
-      data.forEach((horario) => {
+      selectHora.innerHTML = '<option value="">-- Seleccioná horario --</option>'; // Limpiar opciones anteriores
+      if (data.length > 0) {
+        data.forEach((horario) => {
+          const option = document.createElement("option");
+          option.value = horario.hora_inicio;
+          option.textContent = horario.hora_inicio; // Mostrar solo hora_inicio
+          selectHora.appendChild(option);
+        });
+      } else {
         const option = document.createElement("option");
-        // *** MODIFICACIÓN AQUÍ: Usar solo hora_inicio como valor ***
-        option.value = horario.hora_inicio;
-        // *********************************************************
-        option.textContent = horario.hora_inicio + " - " + horario.hora_fin;
+        option.value = "";
+        option.textContent = "No hay horarios disponibles";
         selectHora.appendChild(option);
-      });
+      }
+    })
+    .catch((error) => {
+      console.error("Error al cargar horarios disponibles:", error);
     });
 });
 
