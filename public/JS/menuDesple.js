@@ -1,7 +1,9 @@
 // PARA EL MENU DE HEARDER
 function toggleMenu() {
   const menu = document.querySelector("nav ul.menu");
-  menu.classList.toggle("show");
+  const toggleButton = document.querySelector(".menu-toggle");
+  const isOpen = menu.classList.toggle("show");
+  toggleButton.setAttribute("aria-expanded", isOpen);
 }
 
 // PARA CERRAR SECCION

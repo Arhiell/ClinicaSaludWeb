@@ -83,6 +83,11 @@ nav ul.menu {
   background: none;
   padding: 0;
 }
+/* transición suave */
+nav ul.menu {
+  transition: all 0.3s ease-in-out;
+}
+
 
 /* Mostrar menú cuando tiene clase 'show' */
 nav ul.menu.show {
@@ -222,6 +227,9 @@ main p {
   .footer-column {
     max-width: 32%;
   }
+  nav ul.menu {
+  transition: all 0.3s ease-in-out;
+}
 }
 
 /* Contenedor con imágenes a los lados */
