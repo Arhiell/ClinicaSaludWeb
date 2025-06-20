@@ -109,7 +109,7 @@ router.post("/register", (req, res) => {
 
       conexion.query(
         insertarPaciente,
-        [idPersona, obra_social || null],
+        [idPersona, obra_social || "sin obra social"], // obra_social puede ser null si no se proporciona
         (err2, resultadoPaciente) => {
           if (err2) {
             console.error("Error al insertar en paciente:", err2);
@@ -512,7 +512,7 @@ router.post("/guardar-turno", async (req, res) => {
                INSERT INTO paciente (id_persona, obra_social, id_estado)
                VALUES (?, ?, ?)`;
         // Asume que obraSocialMenor viene en los datos del menor si aplica, o es null
-        const obraSocialMenor = menor.obraSocial || null; // Asegúrate de que el frontend envíe esto si es necesario
+        const obraSocialMenor = menor.obraSocial || "sin obra social"; // Asegúrate de que el frontend envíe esto si es necesario
         const [pacienteResult] = await conexion
           .promise()
           .query(insertarPacienteMenor, [
@@ -749,42 +749,55 @@ router.get("/datos-paciente", async (req, res) => {
 //------------------------------------------------------------------
 router.put("/actualizar-datos", async (req, res) => {
   if (!req.session.user) {
-    console.error(
-      "[DEBUG] Usuario no autenticado al intentar actualizar datos"
-    );
     return res.status(401).json({ error: "No autorizado" });
   }
 
-  const idPersona = req.session.user.id_persona; // Debe ser id_persona del paciente logueado
+  const idPersona = req.session.user.id_persona;
   const { telefono, direccion, email, obra_social, nombre_usuario } = req.body;
 
-  if (!telefono || !direccion || !email) {
-    return res.status(400).json({ error: "Faltan datos obligatorios." });
-  } // Validar que al menos uno de los campos opcionales esté presente
-
   try {
-    // Validación simple de email
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Validar email solo si se envía
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({ error: "Email no válido." });
     }
 
-    // Actualizar tabla persona
-    await conexion
-      .promise()
-      .query(
-        `UPDATE persona SET telefono = ?, direccion = ?, email = ? WHERE id_persona = ?`,
-        [telefono, direccion, email, idPersona]
-      );
+    // Actualizar campos dinámicamente en persona
+    const camposPersona = [];
+    const valoresPersona = [];
 
-    // Actualizar obra social en paciente
-    await conexion
-      .promise()
-      .query(`UPDATE paciente SET obra_social = ? WHERE id_persona = ?`, [
-        obra_social || null,
-        idPersona,
-      ]);
+    if (telefono) {
+      camposPersona.push("telefono = ?");
+      valoresPersona.push(telefono);
+    }
+    if (direccion) {
+      camposPersona.push("direccion = ?");
+      valoresPersona.push(direccion);
+    }
+    if (email) {
+      camposPersona.push("email = ?");
+      valoresPersona.push(email);
+    }
 
-    // Actualizar usuario si corresponde
+    if (camposPersona.length > 0) {
+      await conexion
+        .promise()
+        .query(
+          `UPDATE persona SET ${camposPersona.join(", ")} WHERE id_persona = ?`,
+          [...valoresPersona, idPersona]
+        );
+    }
+
+    // Actualizar obra social si se envía
+    if (typeof obra_social !== "undefined") {
+      await conexion
+        .promise()
+        .query(`UPDATE paciente SET obra_social = ? WHERE id_persona = ?`, [
+          obra_social || null,
+          idPersona,
+        ]);
+    }
+
+    // Actualizar nombre de usuario si se envía
     if (nombre_usuario) {
       await conexion
         .promise()
@@ -793,19 +806,16 @@ router.put("/actualizar-datos", async (req, res) => {
           idPersona,
         ]);
     }
-    // Confirmar que los datos se han actualizado correctamente
-    console.log(`[DEBUG] Datos actualizados para id_persona: ${idPersona}`);
+
     res.json({
       success: true,
       message: "Datos actualizados correctamente.",
-      data: { telefono, direccion, email, obra_social, nombre_usuario },
     });
   } catch (error) {
     console.error("[DEBUG] Error al actualizar los datos:", error);
-    res
-      .status(500)
-      .json({ error: "Error al actualizar los datos del paciente." });
+    res.status(500).json({ error: "Error al actualizar los datos del paciente." });
   }
 });
+
 
 module.exports = router;
