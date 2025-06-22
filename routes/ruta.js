@@ -109,7 +109,7 @@ router.post("/register", (req, res) => {
 
       conexion.query(
         insertarPaciente,
-        [idPersona, obra_social || null],
+        [idPersona, obra_social || "sin obra social"],
         (err2, resultadoPaciente) => {
           if (err2) {
             console.error("Error al insertar en paciente:", err2);
@@ -512,7 +512,7 @@ router.post("/guardar-turno", async (req, res) => {
                INSERT INTO paciente (id_persona, obra_social, id_estado)
                VALUES (?, ?, ?)`;
         // Asume que obraSocialMenor viene en los datos del menor si aplica, o es null
-        const obraSocialMenor = menor.obraSocial || null; // Asegúrate de que el frontend envíe esto si es necesario
+        const obraSocialMenor = menor.obraSocial || "sin obra social"; // Asegúrate de que el frontend envíe esto si es necesario
         const [pacienteResult] = await conexion
           .promise()
           .query(insertarPacienteMenor, [
