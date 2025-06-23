@@ -260,7 +260,7 @@ main p {
 }
 
 /* Responsive para pantallas pequeñas */
-@media (max-width: 859px) {
+@media (max-width: 865px) {
   nav ul.menu {
     display: none; /* Solo se oculta en móviles */
     flex-direction: column;
@@ -278,7 +278,7 @@ main p {
   }
 
   .menu-toggle {
-    display: none;
+    display: block; /* Mostrar el botón de menú en móviles */
     background: none;
     border: none;
     font-size: 2rem;
@@ -287,7 +287,7 @@ main p {
     position: absolute;
     top: 1.2rem;
     right: 1.5rem;
-    z-index: 101;
+    z-index: 1001;
   }
 
   main {
@@ -295,6 +295,13 @@ main p {
     padding: 1rem;
   }
 }
+@media (max-width: 1030px) {
+  .left-img,
+  .right-img {
+    display: none;
+  }
+}
+
 
 nav ul.menu li a.cerrarSesion {
   background-color: #e74c3c; /* Rojo */
