@@ -387,3 +387,31 @@ main strong{
   color:#004a99;
   font-weight: bold;
 }
+.lista-precios {
+  list-style: none; /* Quita los puntos de la lista */
+  padding: 0;
+  margin: 1em 0;
+  max-width: 400px;
+  background-color: #f9f9f9; /* Fondo claro */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.lista-precios li {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  font-size: 1rem;
+  color: #333;
+}
+
+.lista-precios li:last-child {
+  border-bottom: none; /* Quita la línea del último elemento */
+}
+.div-precios {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+}
