@@ -1,20 +1,22 @@
 // db/conexion.js
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 
-const conexion = mysql.createConnection({
+const conexion = mysql.createPool({
   host: "localhost",
   user: "root",
 
-  password: "rulito12345",
-
-  password: "2023",
+  password: "password",
 
   database: "clinica",
 });
 
-conexion.connect((err) => {
-  if (err) throw err;
-  console.log("🟢 Conectado a la base de datos");
-});
+conexion.getConnection()
+  .then((conn) => {
+    console.log("🟢 Conectado a la base de datos");
+    conn.release();
+  })
+  .catch((err) => {
+    console.error("🔴 Error de conexión a la base de datos:", err);
+  });
 
 module.exports = conexion;
