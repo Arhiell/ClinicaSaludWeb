@@ -359,10 +359,10 @@ async function registrarMenor(menor, idTutor, connection) {
   const idPersona = personaResult.insertId;
 
   // Insertar paciente
-  const [pacienteResult] = await connection.execute(`
-    INSERT INTO paciente (id_persona)
-    VALUES (?)
-  `, [idPersona]);
+const [pacienteResult] = await connection.execute(`
+  INSERT INTO paciente (id_persona, id_estado)
+  VALUES (?, ?)
+`, [idPersona, ESTADO_ACTIVO]);
 
   const idPaciente = pacienteResult.insertId;
 
