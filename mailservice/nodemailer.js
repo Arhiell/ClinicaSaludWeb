@@ -1,4 +1,4 @@
-// npm install nodemailer 
+// npm install nodemailer si no funciona
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({

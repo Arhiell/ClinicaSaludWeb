@@ -3,10 +3,19 @@ const transporter = require('./nodemailer');
 
 async function revisarYEnviarEmails() {
   const [cambios] = await db.execute(`
-    SELECT h.id_historial, h.id_turno, h.estado_anterior, h.estado_nuevo, t.id_paciente, p.email, p.nombre
+    SELECT 
+    h.id_historial,
+    h.id_turno,
+    ea.nombre_estado AS estado_anterior,
+    en.nombre_estado AS estado_nuevo,
+    t.id_paciente,
+    p.email,
+    p.nombre
     FROM historial_estado_turno h
     JOIN turno t ON h.id_turno = t.id_turno
     JOIN persona p ON t.id_paciente = p.id_persona
+    JOIN estado ea ON h.estado_anterior = ea.id_estado
+    JOIN estado en ON h.estado_nuevo = en.id_estado
     WHERE h.enviado = FALSE
   `);
 
