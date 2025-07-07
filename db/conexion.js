@@ -5,7 +5,7 @@ const conexion = mysql.createPool({
   host: "localhost",
   user: "root",
 
-  password: "password",
+  password: "bauticapodatabase2000",
 
   database: "clinica",
 });

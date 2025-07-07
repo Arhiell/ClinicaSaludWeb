@@ -407,13 +407,19 @@ router.post("/guardar-turno", async (req, res) => {
     // Determinar paciente (adulto o menor)
     let idPaciente;
     if (menor) {
+      let idTutor;
       const [tutorRows] = await connection.execute(`
         SELECT id_tutor FROM tutor WHERE id_persona = ?
       `, [idPersona]);
 
-      const idTutor = tutorRows[0]?.id_tutor;
-      if (!idTutor) {
-        throw new Error("No se encontró el tutor asociado");
+      if (tutorRows.length > 0) {
+        idTutor = tutorRows[0].id_tutor;
+      } else {
+        // Registrar al usuario logueado como tutor
+        const [result] = await connection.execute(`
+          INSERT INTO tutor (id_persona, id_estado) VALUES (?, ?)
+        `, [idPersona, ESTADO_ACTIVO]);
+        idTutor = result.insertId;
       }
 
       idPaciente = await registrarMenor(menor, idTutor, connection);
