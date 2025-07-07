@@ -6,8 +6,8 @@ async function revisarYEnviarEmails() {
     SELECT 
     h.id_historial,
     h.id_turno,
-    ea.nombre_estado AS estado_anterior,
-    en.nombre_estado AS estado_nuevo,
+    ea.nombre AS estado_anterior,
+    en.nombre AS estado_nuevo,
     t.id_paciente,
     p.email,
     p.nombre
