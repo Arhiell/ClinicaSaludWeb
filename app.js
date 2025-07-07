@@ -6,14 +6,16 @@ const session = require("express-session"); // <-- Añadir esta línea
 
 const app = express();
 const port = 3000;
-
-app.use(
-  session({
-    secret: "3n6#Z!q@r0$pP8v1GxF9^uR@w2ZbM",
-    saveUninitialized: true,
-    cookie: { secure: false }, // Cambiar a true en producción si usas HTTPS
-  })
-);
+// Configuarar express-session
+app.use(session({
+  secret: "3n6#Z!q@r0$pP8v1GxF9^uR@w2ZbM",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Cambiar a true si usás HTTPS
+    maxAge: 1000 * 60 * 60 // 1 hora, opcional
+  }
+}));
 
 // Configurar body-parser para leer formularios
 app.use(bodyParser.urlencoded({ extended: false }));
