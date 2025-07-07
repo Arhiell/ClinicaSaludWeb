@@ -348,8 +348,6 @@ async function generarComprobante(idPaciente, fechaHora) {
 // Función auxiliar para registrar menor y devolver su id_persona
 async function registrarMenor(menor, idTutor, connection) {
   const { nombre, apellido, dni, fechaNacimiento } = menor;
-async function registrarMenor(menor, idTutor, connection) {
-  const { nombre, apellido, dni, fechaNacimiento } = menor;
   const email = `menor${dni}@sinmail.com`; // Email ficticio para menores
 
   // Insertar persona
@@ -357,30 +355,6 @@ async function registrarMenor(menor, idTutor, connection) {
     INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, email, id_rol, id_estado)
     VALUES (?, ?, ?, ?, ?, 3, ?)
   `, [nombre, apellido, dni, fechaNacimiento, email, ESTADO_ACTIVO]);
-
-  const idPersona = personaResult.insertId;
-
-  // Insertar paciente
-  const [pacienteResult] = await connection.execute(`
-    INSERT INTO paciente (id_persona)
-    VALUES (?)
-  `, [idPersona]);
-
-  const idPaciente = pacienteResult.insertId;
-
-  // Relación paciente-tutor
-  await connection.execute(`
-    INSERT INTO paciente_tutor (id_paciente, id_tutor)
-    VALUES (?, ?)
-  `, [idPaciente, idTutor]);
-
-  return idPersona;
-}
-  // Insertar persona
-  const [personaResult] = await connection.execute(`
-    INSERT INTO persona (nombre, apellido, dni, fecha_nacimiento, id_rol, id_estado)
-    VALUES (?, ?, ?, ?, 3, ?)
-  `, [nombre, apellido, dni, fechaNacimiento, ESTADO_ACTIVO]);
 
   const idPersona = personaResult.insertId;
 
